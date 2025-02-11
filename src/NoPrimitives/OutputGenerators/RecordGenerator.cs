@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Text;
+using Microsoft.CodeAnalysis;
 
 
 namespace NoPrimitives.OutputGenerators;
@@ -7,46 +8,55 @@ internal sealed class RecordGenerator : OutputGeneratorBase
 {
     protected override string Render(INamedTypeSymbol symbol, ITypeSymbol typeSymbol)
     {
-        string accessModifier = symbol.DeclaredAccessibility == Accessibility.Public ? "public" : "internal";
+        string accessModifier = OutputGeneratorBase.AccessModifierFor(symbol);
         string primitiveType = typeSymbol.ToDisplayString();
 
-        return $$"""
-                 {{RecordGenerator.WriteNamespace(symbol)}}
-                 {
-                     using System;
-                     using System.ComponentModel;
-                     using System.CodeDom.Compiler;
-                     using System.Diagnostics.CodeAnalysis;
-                 
-                 
-                     [GeneratedCode("NoPrimitives", "{{References.Assembly.Value.GetName().Version}}")]
-                     [ExcludeFromCodeCoverage(Justification = "Generated Code")]
-                     {{RecordGenerator.WriteTypeDeclaration(symbol, accessModifier)}} : IComparable<{{symbol.Name}}>, IComparable
-                     {
-                         private {{symbol.Name}}({{primitiveType}} value)
-                         {
-                             this.Value = value;
-                         }
-                 
-                         public {{primitiveType}} Value { get; }
+        var source = $$"""
+                           using System;
+                           using System.CodeDom.Compiler;
+                           using System.Diagnostics.CodeAnalysis;
 
-                 {{RecordGenerator.WriteFactoryMethod(symbol, primitiveType)}}
 
-                 {{RecordGenerator.WriteImplicitOperators(symbol, primitiveType)}}
+                       {{RecordGenerator.WriteAttributes(symbol)}}
+                           {{RecordGenerator.WriteTypeDeclaration(symbol, accessModifier)}} : IComparable<{{symbol.Name}}>, IComparable
+                           {
+                               private {{symbol.Name}}({{primitiveType}} value)
+                               {
+                                   this.Value = value;
+                               }
+                       
+                               public {{primitiveType}} Value { get; }
 
-                 {{RecordGenerator.WriteCompareTo(symbol, typeSymbol)}}
+                       {{RecordGenerator.WriteFactoryMethod(symbol, primitiveType)}}
 
-                 {{RecordGenerator.WriteToString(typeSymbol)}}
-                 {{RecordGenerator.WriteRelationalOperators(symbol, typeSymbol)}}
-                     }
-                 }
-                 """;
+                       {{RecordGenerator.WriteImplicitOperators(symbol, primitiveType)}}
+
+                       {{RecordGenerator.WriteCompareTo(symbol, typeSymbol)}}
+
+                       {{RecordGenerator.WriteToString(typeSymbol)}}
+                       {{RecordGenerator.WriteRelationalOperators(symbol, typeSymbol)}}
+                           }
+                       """;
+
+        return OutputGeneratorBase.WrapInNamespaceFor(symbol, source);
     }
 
-    private static string WriteNamespace(INamedTypeSymbol symbol) =>
-        !symbol.ContainingNamespace.IsGlobalNamespace
-            ? $"namespace {symbol.ContainingNamespace.ToDisplayString()}"
-            : string.Empty;
+    private static string WriteAttributes(INamedTypeSymbol symbol)
+    {
+        var sb = new StringBuilder();
+
+        sb.Append($"""{'\n'}    [GeneratedCode("NoPrimitives", "{References.Assembly.Value.GetName().Version}")]""");
+        sb.Append($"""{'\n'}    [ExcludeFromCodeCoverage(Justification = "Generated Code")]""");
+
+        sb.Append(RecordGenerator.WriteTypeConverterAttribute(symbol));
+
+        return sb.ToString();
+    }
+
+    private static string WriteTypeConverterAttribute(INamedTypeSymbol symbol) =>
+        OutputGeneratorBase.AlreadyHasAttributeStartingWith(symbol, "System.ComponentModel.TypeConverter")
+            ? string.Empty
+            : $"{'\n'}    [System.ComponentModel.TypeConverter(typeof({symbol.Name}TypeConverter))]";
 
     private static string WriteTypeDeclaration(INamedTypeSymbol symbol, string accessModifier)
     {

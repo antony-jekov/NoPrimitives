@@ -24,11 +24,34 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
         (Compilation compilation, ImmutableArray<Diagnostic> diagnostics) = GeneratorTestBase.GenerateSource(source);
 
         diagnostics.Should().BeEmpty();
-        compilation.SyntaxTrees.Should().HaveCount(2);
+        compilation.SyntaxTrees.Should().HaveCount(3);
 
-        SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.Last();
+        SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(1);
 
-        generatedSyntaxTree.FilePath.Should().ContainAll("MyValueObject", "Some.Namespace", "NoPrimitives", ".g.");
+        generatedSyntaxTree.FilePath.Should().ContainAll("MyValueObject", "Some.Namespace", "NoPrimitives", ".g.cs");
+    }
+
+    [Fact]
+    public void Execute_WhenGivenRecordWithValueObjectAttribute_ItGeneratesTypeConverter()
+    {
+        const string source = """
+                              using NoPrimitives;
+
+                              namespace Some.Namespace;
+
+                              [ValueObject<string>]
+                              internal partial record MyValueObject;
+                              """;
+
+        (Compilation compilation, ImmutableArray<Diagnostic> diagnostics) = GeneratorTestBase.GenerateSource(source);
+
+        diagnostics.Should().BeEmpty();
+        compilation.SyntaxTrees.Should().HaveCount(3);
+
+        SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(2);
+
+        generatedSyntaxTree.FilePath.Should()
+            .ContainAll("MyValueObject.TypeConverter", "Some.Namespace", "NoPrimitives", ".g.cs");
     }
 
     [Theory]
@@ -47,8 +70,8 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
 
         (Compilation compilation, _) = GeneratorTestBase.GenerateSource(source);
 
-        compilation.SyntaxTrees.Should().HaveCount(2);
-        SyntaxTree syntaxTree = compilation.SyntaxTrees.Last();
+        compilation.SyntaxTrees.Should().HaveCount(3);
+        SyntaxTree syntaxTree = compilation.SyntaxTrees.ElementAt(1);
 
         SyntaxNode root = await syntaxTree.GetRootAsync();
 

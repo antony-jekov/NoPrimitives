@@ -10,6 +10,11 @@ namespace NoPrimitives;
 [Generator]
 public class ValueObjectGenerator : IIncrementalGenerator
 {
+    private static readonly ImmutableArray<OutputGeneratorBase> RecordGenerators =
+    [
+        new RecordGenerator(), new TypeConverterGenerator(),
+    ];
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<RecordDeclarationSyntax> provider = ValueObjectGenerator.CreateProvider(context);
@@ -31,42 +36,63 @@ public class ValueObjectGenerator : IIncrementalGenerator
                 static (ctx, _) =>
                     (RecordDeclarationSyntax)ctx.Node
             )
-            .Where(static typeDeclaration =>
-                typeDeclaration is not null);
+            .Where(static typeDeclaration => typeDeclaration is not null);
 
     private static void Execute(
         SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<RecordDeclarationSyntax> RecordDeclarations) data)
+        (Compilation Compilation, ImmutableArray<RecordDeclarationSyntax> TypeDeclarations) data)
     {
-        var recordGenerator = new RecordGenerator();
-
-        foreach (RecordDeclarationSyntax recordDeclaration in data.RecordDeclarations)
+        foreach (RecordDeclarationSyntax declarationSyntax in data.TypeDeclarations)
         {
-            ValueObjectGenerator.ProcessDeclaration(context, recordDeclaration, data.Compilation, recordGenerator);
+            ValueObjectGenerator.ProcessTypeDeclaration(
+                context,
+                declarationSyntax,
+                data.Compilation,
+                ValueObjectGenerator.RecordGenerators
+            );
         }
     }
 
-    private static void ProcessDeclaration(
+    private static void ProcessTypeDeclaration(
         SourceProductionContext context,
-        RecordDeclarationSyntax recordDeclaration,
+        TypeDeclarationSyntax declarationSyntax,
         Compilation compilation,
-        OutputGeneratorBase outputGenerator)
+        ImmutableArray<OutputGeneratorBase> generators)
     {
-        SemanticModel model = compilation.GetSemanticModel(recordDeclaration.SyntaxTree);
+        (INamedTypeSymbol symbol, ITypeSymbol typeSymbol)? symbols =
+            ValueObjectGenerator.SymbolsFor(compilation, declarationSyntax);
 
-        if (model.GetDeclaredSymbol(recordDeclaration) is not INamedTypeSymbol symbol)
+        if (symbols is null)
         {
             return;
+        }
+
+        (INamedTypeSymbol symbol, ITypeSymbol typeSymbol) = symbols.Value;
+
+        foreach (OutputGeneratorBase outputGenerator in generators)
+        {
+            outputGenerator.Generate(context, symbol, typeSymbol);
+        }
+    }
+
+    private static (INamedTypeSymbol symbol, ITypeSymbol typeSymbol)? SymbolsFor(Compilation compilation,
+        TypeDeclarationSyntax declarationSyntax)
+    {
+        SemanticModel model = compilation.GetSemanticModel(declarationSyntax.SyntaxTree);
+
+        if (model.GetDeclaredSymbol(declarationSyntax) is not INamedTypeSymbol symbol)
+        {
+            return null;
         }
 
         ITypeSymbol? typeSymbol = ValueObjectGenerator.ExtractTypeArgument(symbol);
 
         if (typeSymbol is null)
         {
-            return;
+            return null;
         }
 
-        outputGenerator.Generate(context, symbol, typeSymbol);
+        return (symbol, typeSymbol);
     }
 
     private static ITypeSymbol? ExtractTypeArgument(INamedTypeSymbol symbol) =>
