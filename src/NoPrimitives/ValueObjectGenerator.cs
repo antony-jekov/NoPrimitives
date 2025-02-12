@@ -3,6 +3,8 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NoPrimitives.OutputGenerators;
+using NoPrimitives.OutputGenerators.Converters.TypeConverter;
+using NoPrimitives.OutputGenerators.Records;
 
 
 namespace NoPrimitives;

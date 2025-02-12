@@ -13,7 +13,7 @@ public abstract class GeneratorTestBase
         Compilation compilation = GeneratorTestBase.CreateCompilation(source);
 
         var generator = new ValueObjectGenerator();
-        var driver = CSharpGeneratorDriver.Create(generator);
+        CSharpGeneratorDriver? driver = CSharpGeneratorDriver.Create(generator);
 
         driver.RunGeneratorsAndUpdateCompilation(compilation,
             out Compilation updatedCompilation,

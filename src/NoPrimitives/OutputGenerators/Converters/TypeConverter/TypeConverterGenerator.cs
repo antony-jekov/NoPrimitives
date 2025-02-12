@@ -1,14 +1,14 @@
 ﻿using Microsoft.CodeAnalysis;
 
 
-namespace NoPrimitives.OutputGenerators;
+namespace NoPrimitives.OutputGenerators.Converters.TypeConverter;
 
 internal class TypeConverterGenerator() : OutputGeneratorBase("TypeConverter")
 {
     protected override string Render(INamedTypeSymbol symbol, ITypeSymbol typeSymbol)
     {
-        string accessModifier = OutputGeneratorBase.AccessModifierFor(symbol);
-        string primitiveType = OutputGeneratorBase.ExtractTypeFromNullableType(typeSymbol).ToDisplayString();
+        string accessModifier = Util.AccessModifierFor(symbol);
+        string primitiveType = Util.ExtractTypeFromNullableType(typeSymbol).ToDisplayString();
         string typeName = symbol.Name;
 
         var source =

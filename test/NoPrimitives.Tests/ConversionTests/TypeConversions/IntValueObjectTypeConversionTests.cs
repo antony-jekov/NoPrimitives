@@ -25,6 +25,7 @@ public class IntValueObjectTypeConversionTests
     public void ConvertTo_ShouldReturnCorrectValue()
     {
         this._typeConverter.ConvertTo(null, null, IntValueObject.Create(50), typeof(int)).Should().Be(50);
-        this._typeConverter.ConvertTo(null, null, IntValueObject.Create(5), typeof(string)).Should().Be("5");
+        this._typeConverter.ConvertTo(
+            null, null, IntValueObject.Create(5), typeof(string)).Should().Be("5");
     }
 }
