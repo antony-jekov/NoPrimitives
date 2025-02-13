@@ -1,7 +1,8 @@
-<div style="text-align: center">
-    <img src="assets/noprimitives.jpg" alt="logo with the letters N and P" width="300">
+<div align="center">
+    <img src="assets/noprimitives.jpg" alt="logo with the letters N and P" width="600">
 </div>
-![Build](https://github.com/NoPrimitives/NoPrimitives/actions/workflows/main.yaml/badge.svg)
+
+![Tests Badge](https://github.com/antony-jekov/NoPrimitives/actions/workflows/main.yaml/badge.svg)
 
 # No Primitives: Value Objects the easy way!
 ## Forget the boilerplate nonsense!
