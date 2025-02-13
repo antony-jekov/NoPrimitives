@@ -2,7 +2,9 @@
     <img src="assets/noprimitives.jpg" alt="logo with the letters N and P" width="600">
 </div>
 
-![Tests Badge](https://github.com/antony-jekov/NoPrimitives/actions/workflows/main.yaml/badge.svg)
+![tests workflow](https://github.com/antony-jekov/NoPrimitives/actions/workflows/main.yml/badge.svg)
+[![codecov](https://codecov.io/gh/antony-jekov/NoPrimitives/branch/main/graph/badge.svg?token=wSdo9LnqaP)](https://codecov.io/gh/antony-jekov/NoPrimitives)
+
 
 # No Primitives: Value Objects the easy way!
 ## Forget the boilerplate nonsense!
@@ -26,3 +28,6 @@ app.MapGet("/v1/users/{{id}}", async (UserId id) => {
     // use your value object and enjoy it being always valid!
 })
 ```
+
+## Test Coverage Graph
+![codecov](https://codecov.io/gh/antony-jekov/NoPrimitives/graphs/tree.svg?token=wSdo9LnqaP)
