@@ -15,9 +15,18 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
+    - name: Install ReportGenerator
+      run: dotnet tool install -g dotnet-reportgenerator-globaltool
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity minimal
+    - name: Test with Coverage
+      run: dotnet test --no-build -v minimal --collect:"XPlat Code Coverage" --results-directory .coverage
+    - name: Aggregate coverage reports
+      run: reportgenerator -reports:.coverage/**/coverage.cobertura.xml -targetdir:.coverage/aggregated -reporttypes:Html,Cobertura
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: .coverage/aggregated/Cobertura.xml
