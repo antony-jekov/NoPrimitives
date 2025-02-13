@@ -21,7 +21,7 @@ jobs:
     - name: Install ReportGenerator
       run: dotnet tool install -g dotnet-reportgenerator-globaltool
     - name: Restore dependencies
-      run: dotnet restore --locked-mode
+      run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
     - name: Test with Coverage
