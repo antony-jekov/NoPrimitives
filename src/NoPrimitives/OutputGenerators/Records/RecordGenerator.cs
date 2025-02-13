@@ -22,6 +22,7 @@ internal sealed class RecordGenerator : OutputGeneratorBase
         new RecordImplicitOperatorsStep(),
         new RecordCompareStep(),
         new RecordRelationalOperatorsStep(),
+        new RecordParsableStep(),
         new RecordToString()
     );
 

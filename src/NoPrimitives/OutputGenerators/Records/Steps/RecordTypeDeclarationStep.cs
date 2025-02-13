@@ -16,6 +16,9 @@ internal class RecordTypeDeclarationStep : ScopeStartStep
         builder.AppendLine($"""
                             {context.Indentation}{accessModifier}{readonlyValue} partial record{structValue} {context.ValueObjectSymbol.Name}
                             {context.Indentation}    : IComparable<{context.ValueObjectSymbol.Name}>, IComparable
+                            #if NET7_0_OR_GREATER
+                            {context.Indentation}        , IParsable<{context.ValueObjectSymbol.Name}>
+                            #endif
                             """);
     }
 }

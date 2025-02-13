@@ -17,26 +17,27 @@ internal class RecordRelationalOperatorsStep : ScopedRenderStep
             return;
         }
 
-        builder.Append($$"""
-                         {{context.Indentation}}public static bool operator > ({{symbolName}} left, {{symbolName}} right)
-                         {{context.Indentation}}{
-                         {{context.Indentation}}    return left.Value > right.Value;
-                         {{context.Indentation}}}
+        builder.AppendLine($$"""
 
-                         {{context.Indentation}}public static bool operator < ({{symbolName}} left, {{symbolName}} right)
-                         {{context.Indentation}}{
-                         {{context.Indentation}}    return left.Value < right.Value;
-                         {{context.Indentation}}}
-                                 
-                         {{context.Indentation}}public static bool operator >= ({{symbolName}} left, {{symbolName}} right)
-                         {{context.Indentation}}{
-                         {{context.Indentation}}    return left.Value >= right.Value;
-                         {{context.Indentation}}}
+                             {{context.Indentation}}public static bool operator > ({{symbolName}} left, {{symbolName}} right)
+                             {{context.Indentation}}{
+                             {{context.Indentation}}    return left.Value > right.Value;
+                             {{context.Indentation}}}
 
-                         {{context.Indentation}}public static bool operator <= ({{symbolName}} left, {{symbolName}} right)
-                         {{context.Indentation}}{
-                         {{context.Indentation}}    return left.Value <= right.Value;
-                         {{context.Indentation}}}
-                         """);
+                             {{context.Indentation}}public static bool operator < ({{symbolName}} left, {{symbolName}} right)
+                             {{context.Indentation}}{
+                             {{context.Indentation}}    return left.Value < right.Value;
+                             {{context.Indentation}}}
+                                     
+                             {{context.Indentation}}public static bool operator >= ({{symbolName}} left, {{symbolName}} right)
+                             {{context.Indentation}}{
+                             {{context.Indentation}}    return left.Value >= right.Value;
+                             {{context.Indentation}}}
+
+                             {{context.Indentation}}public static bool operator <= ({{symbolName}} left, {{symbolName}} right)
+                             {{context.Indentation}}{
+                             {{context.Indentation}}    return left.Value <= right.Value;
+                             {{context.Indentation}}}
+                             """);
     }
 }

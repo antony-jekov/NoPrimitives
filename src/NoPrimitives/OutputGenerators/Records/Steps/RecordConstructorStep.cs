@@ -13,7 +13,6 @@ internal class RecordConstructorStep : ScopedRenderStep
 
         builder.AppendLine(
             $$"""
-
               {{context.Indentation}}private {{context.ValueObjectSymbol.Name}}({{primitiveType}} value)
               {{context.Indentation}}{
               {{context.Indentation}}    this.Value = value;

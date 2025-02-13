@@ -14,12 +14,12 @@ internal class RecordToString : ScopedRenderStep
         string fallbackValue = isNullable ? " ?? string.Empty" : string.Empty;
         string conditionalAccessValue = isNullable ? "?" : string.Empty;
 
-        builder.Append($$"""
+        builder.AppendLine($$"""
 
-                         {{context.Indentation}}public override string ToString()
-                         {{context.Indentation}}{
-                         {{context.Indentation}}    return this.Value{{conditionalAccessValue}}.ToString(){{fallbackValue}};
-                         {{context.Indentation}}}
-                         """);
+                             {{context.Indentation}}public override string ToString()
+                             {{context.Indentation}}{
+                             {{context.Indentation}}    return this.Value{{conditionalAccessValue}}.ToString(){{fallbackValue}};
+                             {{context.Indentation}}}
+                             """);
     }
 }

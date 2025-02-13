@@ -20,7 +20,7 @@ internal abstract class ScopeStartStep : IRenderStep
 
         builder.AppendLine($$"""
                              {{context.Indentation}}{
-                             {{context.Indentation}}{{scopedBuilder}}
+                             {{scopedBuilder}}
                              {{context.Indentation}}}
                              """);
     }
