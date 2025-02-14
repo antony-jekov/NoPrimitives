@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
+using NoPrimitives.Core;
 using NoPrimitives.Rendering.Steps;
 using NSubstitute;
 
@@ -17,7 +18,9 @@ public class PipelineTests
         var typeSymbol = Substitute.For<ITypeSymbol>();
         typeSymbol.ToDisplayString().Returns(string.Empty);
 
-        var context = new RenderContext(symbol, typeSymbol);
+        var renderItem = new RenderItem(symbol, typeSymbol);
+
+        var context = new RenderContext(renderItem);
 
         string result = pipeline.Execute(context);
 
@@ -58,7 +61,8 @@ public class PipelineTests
         var typeSymbol = Substitute.For<ITypeSymbol>();
         typeSymbol.ToDisplayString().Returns(string.Empty);
 
-        var context = new RenderContext(symbol, typeSymbol);
+        var renderItem = new RenderItem(symbol, typeSymbol);
+        var context = new RenderContext(renderItem);
 
         string result = pipeline.Execute(context);
 

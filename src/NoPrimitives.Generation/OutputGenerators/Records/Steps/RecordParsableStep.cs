@@ -10,8 +10,8 @@ internal class RecordParsableStep : ScopedRenderStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {
-        string primitiveType = Util.ExtractTypeFromNullableType(context.PrimitiveTypeSymbol).ToDisplayString();
-        INamedTypeSymbol symbol = context.ValueObjectSymbol;
+        string primitiveType = Util.ExtractTypeFromNullableType(context.Item.Primitive).ToDisplayString();
+        INamedTypeSymbol symbol = context.Item.ValueObject;
 
         builder.AppendLine($"""
 

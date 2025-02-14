@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using NoPrimitives.Core;
 using NoPrimitives.Rendering;
 using NoPrimitives.Rendering.Steps;
 
@@ -17,14 +18,39 @@ internal class RecordAttributesStep : ScopedRenderStep
 
         builder.AppendLine($"""{context.Indentation}[ExcludeFromCodeCoverage(Justification = "Generated Code")]""");
 
-        bool alreadyHasTypeConverterAttribute =
-            Util.AlreadyHasAttributeStartingWith(context.ValueObjectSymbol, "System.ComponentModel.TypeConverter");
+        var typeConverterAttribute =
+            $"System.ComponentModel.TypeConverter(typeof({context.Item.ValueObject.Name}TypeConverter))";
 
-        if (!alreadyHasTypeConverterAttribute)
+        RecordAttributesStep.AddAttributeIfNotPresent(context, typeConverterAttribute, builder);
+    }
+
+    private static void AddForIntegrations(RenderContext context, Integrations integrations, StringBuilder builder)
+    {
+        string symbolName = context.Item.ValueObject.Name;
+
+        if (integrations.HasFlag(Integrations.NewtonsoftJson))
         {
-            builder.AppendLine(
-                $"{context.Indentation}[System.ComponentModel.TypeConverter(typeof({context.ValueObjectSymbol.Name}TypeConverter))]"
-            );
+            var attribute = $"Newtonsoft.Json.JsonConverter(typeof({symbolName}NewtonsoftConverter))";
+
+            //RecordAttributesStep.AddAttributeIfNotPresent(context, attribute, builder);
         }
+    }
+
+    private static void AddAttributeIfNotPresent(RenderContext context, string attribute, StringBuilder builder)
+    {
+        string attributeFullName = RecordAttributesStep.ExtractAttributeFullName(attribute);
+
+        if (Util.AlreadyHasAttributeStartingWith(context.Item.ValueObject, attributeFullName))
+        {
+            return;
+        }
+
+        builder.AppendLine($"{context.Indentation}[{attribute}]");
+    }
+
+    private static string ExtractAttributeFullName(string attribute)
+    {
+        int indexOf = attribute.IndexOf('(');
+        return attribute.Substring(0, indexOf);
     }
 }

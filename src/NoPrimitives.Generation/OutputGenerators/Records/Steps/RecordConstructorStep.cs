@@ -9,16 +9,17 @@ internal class RecordConstructorStep : ScopedRenderStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {
-        string primitiveType = context.PrimitiveTypeSymbol.ToDisplayString();
+        string primitiveType = context.Item.Primitive.ToDisplayString();
+        string indentation = context.Indentation;
 
         builder.AppendLine(
             $$"""
-              {{context.Indentation}}private {{context.ValueObjectSymbol.Name}}({{primitiveType}} value)
-              {{context.Indentation}}{
-              {{context.Indentation}}    this.Value = value;
-              {{context.Indentation}}}
-              {{context.Indentation}}
-              {{context.Indentation}}public {{primitiveType}} Value { get; }
+              {{indentation}}private {{context.Item.ValueObject.Name}}({{primitiveType}} value)
+              {{indentation}}{
+              {{indentation}}    this.Value = value;
+              {{indentation}}}
+              {{indentation}}
+              {{indentation}}public {{primitiveType}} Value { get; }
               """);
     }
 }

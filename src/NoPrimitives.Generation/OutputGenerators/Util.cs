@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.CodeAnalysis;
+using NoPrimitives.Core;
 
 
 namespace NoPrimitives.Generation.OutputGenerators;
@@ -41,4 +42,16 @@ internal static class Util
                 typeSymbol.Name is "DateTime" or "TimeSpan" or "DateOnly" or "TimeOnly" or "DateTimeOffset")
                || typeSymbol.BaseType?.ToDisplayString() == "System.DateTime";
     }
+
+    internal static Integrations? ExtractIntegrations(ISymbol symbol) =>
+        symbol.GetAttributes()
+            .FirstOrDefault(Util.IsValueObjectAttribute)
+            ?.ConstructorArguments
+            .Where(arg => arg.Value is Integrations)
+            .Select(arg => arg.Value is not null ? (Integrations)arg.Value : Integrations.Default)
+            .FirstOrDefault()
+        ?? Integrations.Default;
+
+    internal static bool IsValueObjectAttribute(AttributeData ad) =>
+        ad.AttributeClass?.ToString().StartsWith("NoPrimitives.ValueObject") ?? false;
 }

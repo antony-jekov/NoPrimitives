@@ -1,15 +1,15 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using NoPrimitives.Rendering;
 
 
 namespace NoPrimitives.Generation.OutputGenerators.Converters.TypeConverter;
 
 internal class TypeConverterGenerator() : OutputGeneratorBase("TypeConverter")
 {
-    protected override string Render(INamedTypeSymbol symbol, ITypeSymbol typeSymbol)
+    protected override string Render(RenderItem item)
     {
-        string accessModifier = Util.AccessModifierFor(symbol);
-        string primitiveType = Util.ExtractTypeFromNullableType(typeSymbol).ToDisplayString();
-        string typeName = symbol.Name;
+        string accessModifier = Util.AccessModifierFor(item.ValueObject);
+        string primitiveType = Util.ExtractTypeFromNullableType(item.Primitive).ToDisplayString();
+        string typeName = item.ValueObject.Name;
 
         var source =
             $$"""
@@ -67,7 +67,7 @@ internal class TypeConverterGenerator() : OutputGeneratorBase("TypeConverter")
                   }
               """;
 
-        return OutputGeneratorBase.WrapInNamespaceFor(symbol, source);
+        return OutputGeneratorBase.WrapInNamespaceFor(item.ValueObject, source);
     }
 
     private static string WritePrimitiveFromString(string primitiveType) =>

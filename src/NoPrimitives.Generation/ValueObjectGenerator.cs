@@ -1,10 +1,9 @@
 ﻿using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NoPrimitives.Generation.OutputGenerators;
-using NoPrimitives.Generation.OutputGenerators.Converters.TypeConverter;
-using NoPrimitives.Generation.OutputGenerators.Records;
+using NoPrimitives.Generation.Extensions;
+using NoPrimitives.Generation.Processors;
+using NoPrimitives.Rendering;
 
 
 namespace NoPrimitives.Generation;
@@ -12,11 +11,6 @@ namespace NoPrimitives.Generation;
 [Generator]
 public class ValueObjectGenerator : IIncrementalGenerator
 {
-    private static readonly ImmutableArray<OutputGeneratorBase> RecordGenerators =
-    [
-        new RecordGenerator(), new TypeConverterGenerator(),
-    ];
-
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<RecordDeclarationSyntax> provider = ValueObjectGenerator.CreateProvider(context);
@@ -24,7 +18,7 @@ public class ValueObjectGenerator : IIncrementalGenerator
         IncrementalValueProvider<(Compilation Left, ImmutableArray<RecordDeclarationSyntax> Right)> source =
             context.CompilationProvider.Combine(provider.Collect());
 
-        context.RegisterSourceOutput(source, ValueObjectGenerator.Execute);
+        context.RegisterSourceOutput(source, ValueObjectGenerator.GenerateRecordValueObjects);
     }
 
     private static IncrementalValuesProvider<RecordDeclarationSyntax> CreateProvider(
@@ -40,87 +34,13 @@ public class ValueObjectGenerator : IIncrementalGenerator
             )
             .Where(static typeDeclaration => typeDeclaration is not null);
 
-    private static void Execute(
+    private static void GenerateRecordValueObjects(
         SourceProductionContext context,
         (Compilation Compilation, ImmutableArray<RecordDeclarationSyntax> TypeDeclarations) data)
     {
-        foreach (RecordDeclarationSyntax declarationSyntax in data.TypeDeclarations)
-        {
-            ValueObjectGenerator.ProcessTypeDeclaration(
-                context,
-                declarationSyntax,
-                data.Compilation,
-                ValueObjectGenerator.RecordGenerators
-            );
-        }
+        ImmutableArray<RenderItem> recordSymbols =
+            data.TypeDeclarations.ToRenderItems(data.Compilation);
+
+        RecordsProcessor.Process(context, recordSymbols);
     }
-
-    private static void ProcessTypeDeclaration(
-        SourceProductionContext context,
-        TypeDeclarationSyntax declarationSyntax,
-        Compilation compilation,
-        ImmutableArray<OutputGeneratorBase> generators)
-    {
-        (INamedTypeSymbol symbol, ITypeSymbol typeSymbol)? symbols =
-            ValueObjectGenerator.SymbolsFor(compilation, declarationSyntax);
-
-        if (symbols is null)
-        {
-            return;
-        }
-
-        (INamedTypeSymbol symbol, ITypeSymbol typeSymbol) = symbols.Value;
-
-        foreach (OutputGeneratorBase outputGenerator in generators)
-        {
-            outputGenerator.Generate(context, symbol, typeSymbol);
-        }
-    }
-
-    private static (INamedTypeSymbol symbol, ITypeSymbol typeSymbol)? SymbolsFor(Compilation compilation,
-        TypeDeclarationSyntax declarationSyntax)
-    {
-        SemanticModel model = compilation.GetSemanticModel(declarationSyntax.SyntaxTree);
-
-        if (model.GetDeclaredSymbol(declarationSyntax) is not INamedTypeSymbol symbol)
-        {
-            return null;
-        }
-
-        ITypeSymbol? typeSymbol = ValueObjectGenerator.ExtractTypeArgument(symbol);
-
-        if (typeSymbol is null)
-        {
-            return null;
-        }
-
-        return (symbol, typeSymbol);
-    }
-
-    private static ITypeSymbol? ExtractTypeArgument(INamedTypeSymbol symbol) =>
-        ValueObjectGenerator.ExtractGenericTypeArgument(symbol) ??
-        ValueObjectGenerator.ExtractConstructorTypeArgument(symbol);
-
-    private static ITypeSymbol? ExtractConstructorTypeArgument(INamedTypeSymbol symbol)
-    {
-        AttributeData? attributeData =
-            symbol.GetAttributes().FirstOrDefault(ValueObjectGenerator.IsValueObjectAttribute);
-
-        TypedConstant? typeArgument = attributeData?.ConstructorArguments
-            .FirstOrDefault(arg => arg.Kind == TypedConstantKind.Type);
-
-        return typeArgument?.Value as ITypeSymbol;
-    }
-
-    private static ITypeSymbol? ExtractGenericTypeArgument(INamedTypeSymbol symbol)
-    {
-        INamedTypeSymbol? attributeClass = symbol.GetAttributes()
-            .FirstOrDefault(ValueObjectGenerator.IsValueObjectAttribute)
-            ?.AttributeClass;
-
-        return attributeClass?.TypeArguments.FirstOrDefault();
-    }
-
-    private static bool IsValueObjectAttribute(AttributeData ad) =>
-        ad.AttributeClass?.ToString().StartsWith("NoPrimitives.ValueObject") ?? false;
 }

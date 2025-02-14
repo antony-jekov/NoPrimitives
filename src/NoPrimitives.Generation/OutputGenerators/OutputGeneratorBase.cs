@@ -1,19 +1,18 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using NoPrimitives.Rendering;
 
 
 namespace NoPrimitives.Generation.OutputGenerators;
 
 internal abstract class OutputGeneratorBase(string? suffix = null)
 {
-    public void Generate(
-        SourceProductionContext context,
-        INamedTypeSymbol symbol,
-        ITypeSymbol typeSymbol)
+    public void Generate(SourceProductionContext context, RenderItem item)
     {
-        string filename = OutputGeneratorBase.FilenameFor(symbol, suffix);
-        string source = this.Render(symbol, typeSymbol);
+        string filename = OutputGeneratorBase.FilenameFor(item.ValueObject, suffix);
+        string source = this.Render(item);
+
         SourceText sourceText = SourceText.From(source, Encoding.UTF8);
 
         context.AddSource(filename, sourceText);
@@ -47,5 +46,5 @@ internal abstract class OutputGeneratorBase(string? suffix = null)
                 }
                 """;
 
-    protected abstract string Render(INamedTypeSymbol symbol, ITypeSymbol typeSymbol);
+    protected abstract string Render(RenderItem item);
 }

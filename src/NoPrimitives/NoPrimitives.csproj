@@ -8,4 +8,8 @@
         <RootNamespace>NoPrimitives</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\NoPrimitives.Core\NoPrimitives.Core.csproj"/>
+    </ItemGroup>
+
 </Project>

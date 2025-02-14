@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using NoPrimitives.Core;
 using NoPrimitives.Generation.OutputGenerators.Records.Steps;
 using NoPrimitives.Rendering;
 using NoPrimitives.Rendering.Steps;
@@ -8,7 +8,7 @@ namespace NoPrimitives.Generation.OutputGenerators.Records;
 
 internal sealed class RecordGenerator : OutputGeneratorBase
 {
-    private static readonly Pipeline RenderPipeline = new(
+    private readonly Rendering.Pipeline _renderPipeline = new(
         new NamespaceStep(),
         new UsingsStep(
             "System",
@@ -26,6 +26,6 @@ internal sealed class RecordGenerator : OutputGeneratorBase
         new RecordToString()
     );
 
-    protected override string Render(INamedTypeSymbol symbol, ITypeSymbol typeSymbol) =>
-        RecordGenerator.RenderPipeline.Execute(new RenderContext(symbol, typeSymbol));
+    protected override string Render(RenderItem item) =>
+        this._renderPipeline.Execute(new RenderContext(item));
 }
