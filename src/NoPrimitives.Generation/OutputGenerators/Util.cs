@@ -9,9 +9,7 @@ internal static class Util
     internal static string AccessModifierFor(INamedTypeSymbol symbol) =>
         symbol.DeclaredAccessibility == Accessibility.Public ? "public" : "internal";
 
-    internal static bool AlreadyHasAttributeStartingWith(INamedTypeSymbol symbol, string prefix) =>
-        symbol.GetAttributes()
-            .Any(a => a.AttributeClass?.ToString().StartsWith(prefix) ?? false);
+    
 
     internal static ITypeSymbol ExtractTypeFromNullableType(ITypeSymbol typeSymbol) =>
         typeSymbol.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&

@@ -24,8 +24,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\src\NoPrimitives.Generation\NoPrimitives.Generation.csproj" OutputItemType="Analyzer"/>
         <ProjectReference Include="..\..\src\NoPrimitives.Rendering\NoPrimitives.Rendering.csproj" OutputItemType="Analyzer"/>
-        <ProjectReference Include="..\..\src\NoPrimitives.Core\NoPrimitives.Core.csproj" OutputItemType="Analyzer"/>
-        <ProjectReference Include="..\..\src\NoPrimitives\NoPrimitives.csproj"/>
+        <ProjectReference Include="..\..\src\NoPrimitives\NoPrimitives.csproj" OutputItemType="Analyzer"/>
     </ItemGroup>
 
 </Project>

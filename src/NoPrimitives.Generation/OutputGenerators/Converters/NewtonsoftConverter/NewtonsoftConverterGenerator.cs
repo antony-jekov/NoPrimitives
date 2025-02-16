@@ -6,7 +6,7 @@ using NoPrimitives.Rendering.Steps;
 namespace NoPrimitives.Generation.OutputGenerators.Converters.NewtonsoftConverter;
 
 internal class NewtonsoftConverterGenerator()
-    : OutputGeneratorBase("NewtonsoftJsonConverter", Integrations.NewtonsoftJson)
+    : OutputGeneratorBase("NewtonsoftJsonConverter")
 {
     private static readonly RenderPipeline Pipeline = new(
         new NamespaceStep(),

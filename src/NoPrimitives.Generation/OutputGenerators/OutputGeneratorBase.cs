@@ -6,15 +6,10 @@ using NoPrimitives.Rendering;
 
 namespace NoPrimitives.Generation.OutputGenerators;
 
-internal abstract class OutputGeneratorBase(string? suffix = null, Integrations? integrations = null)
+internal abstract class OutputGeneratorBase(string? suffix = null)
 {
     public void Generate(SourceProductionContext context, RenderItem item)
     {
-        if (integrations.HasValue && !item.Integrations.HasFlag(integrations.Value))
-        {
-            return;
-        }
-
         string filename = OutputGeneratorBase.FilenameFor(item.ValueObject, suffix);
         string source = this.Render(item);
 

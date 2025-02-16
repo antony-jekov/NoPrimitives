@@ -5,7 +5,7 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Generation.OutputGenerators.Converters.TypeConverter;
 
-internal class TypeConverterGenerator() : OutputGeneratorBase("TypeConverter", Integrations.TypeConversions)
+internal class TypeConverterGenerator() : OutputGeneratorBase("TypeConverter")
 {
     private readonly RenderPipeline _pipeline = new(
         new NamespaceStep(),

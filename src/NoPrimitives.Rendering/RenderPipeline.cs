@@ -6,7 +6,7 @@ namespace NoPrimitives.Rendering;
 
 public class RenderPipeline(params IRenderStep[] steps)
 {
-    private static readonly StepWrapper TerminationStep = new();
+    public static readonly StepWrapper TerminationStep = new();
 
     private readonly StepWrapper _stepsWrapped = RenderPipeline.BuildChain(steps);
 
@@ -38,7 +38,7 @@ public class RenderPipeline(params IRenderStep[] steps)
         return current;
     }
 
-    private class StepWrapper(IRenderStep? step = null, INextRenderStep? next = null) : INextRenderStep
+    public class StepWrapper(IRenderStep? step = null, INextRenderStep? next = null) : INextRenderStep
     {
         public void Render(RenderContext context, StringBuilder builder)
         {

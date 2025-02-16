@@ -6,7 +6,7 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Generation.OutputGenerators.Records.Steps;
 
-internal class RecordAttributesStep : ScopedRenderStep
+internal class RecordAttributesStep(params AttributeStep[] integrationAttributes) : ScopedRenderStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {
@@ -17,42 +17,14 @@ internal class RecordAttributesStep : ScopedRenderStep
 
         builder.AppendLine($"""{context.Indentation}[ExcludeFromCodeCoverage(Justification = "Generated Code")]""");
 
-        RecordAttributesStep.AddForIntegrations(context, builder);
+        this.AddForIntegrations(context, builder);
     }
 
-    private static void AddForIntegrations(RenderContext context, StringBuilder builder)
+    private void AddForIntegrations(RenderContext context, StringBuilder builder)
     {
-        if (context.Item.Integrations.HasFlag(Integrations.TypeConversions))
+        foreach (AttributeStep attribute in integrationAttributes)
         {
-            var typeConverterAttribute =
-                $"System.ComponentModel.TypeConverter(typeof({context.Item.ValueObject.Name}TypeConverter))";
-
-            RecordAttributesStep.AddAttributeIfNotPresent(context, typeConverterAttribute, builder);
+            attribute.Render(context, builder, RenderPipeline.TerminationStep);
         }
-
-        if (context.Item.Integrations.HasFlag(Integrations.NewtonsoftJson))
-        {
-            var attribute = $"Newtonsoft.Json.JsonConverter(typeof({context.TypeName}NewtonsoftJsonConverter))";
-
-            RecordAttributesStep.AddAttributeIfNotPresent(context, attribute, builder);
-        }
-    }
-
-    private static void AddAttributeIfNotPresent(RenderContext context, string attribute, StringBuilder builder)
-    {
-        string attributeFullName = RecordAttributesStep.ExtractAttributeFullName(attribute);
-
-        if (Util.AlreadyHasAttributeStartingWith(context.Item.ValueObject, attributeFullName))
-        {
-            return;
-        }
-
-        builder.AppendLine($"{context.Indentation}[{attribute}]");
-    }
-
-    private static string ExtractAttributeFullName(string attribute)
-    {
-        int indexOf = attribute.IndexOf('(');
-        return attribute.Substring(0, indexOf);
     }
 }

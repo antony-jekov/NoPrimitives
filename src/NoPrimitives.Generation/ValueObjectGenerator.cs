@@ -38,9 +38,9 @@ public class ValueObjectGenerator : IIncrementalGenerator
         SourceProductionContext context,
         (Compilation Compilation, ImmutableArray<RecordDeclarationSyntax> TypeDeclarations) data)
     {
-        ImmutableArray<RenderItem> recordSymbols =
+        ImmutableArray<RenderItem> renderItems =
             data.TypeDeclarations.ToRenderItems(data.Compilation);
 
-        RecordsProcessor.Process(context, recordSymbols);
+        RecordsProcessor.Process(context, renderItems);
     }
 }

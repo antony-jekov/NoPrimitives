@@ -5,16 +5,16 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Generation.OutputGenerators.Records;
 
-internal sealed class RecordGenerator : OutputGeneratorBase
+internal sealed class RecordGenerator(params AttributeStep[] integrationAttributes) : OutputGeneratorBase
 {
-    private static readonly RenderPipeline RenderPipeline = new(
+    private readonly RenderPipeline _renderPipeline = new(
         new NamespaceStep(),
         new UsingsStep(
             "System",
             "System.CodeDom.Compiler",
             "System.Diagnostics.CodeAnalysis"
         ),
-        new RecordAttributesStep(),
+        new RecordAttributesStep(integrationAttributes),
         new RecordTypeDeclarationStep(),
         new RecordConstructorStep(),
         new RecordFactoryMethodStep(),
@@ -26,5 +26,5 @@ internal sealed class RecordGenerator : OutputGeneratorBase
     );
 
     protected override string Render(RenderItem item) =>
-        RecordGenerator.RenderPipeline.Execute(new RenderContext(item));
+        this._renderPipeline.Execute(new RenderContext(item));
 }

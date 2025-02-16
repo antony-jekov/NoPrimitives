@@ -6,18 +6,18 @@ using NoPrimitives.Rendering;
 
 namespace NoPrimitives.Generation.Pipeline;
 
-internal class OutputGenerationPipeline(params OutputGeneratorBase[] generators)
+internal class OutputGenerationPipeline(ImmutableArray<OutputGeneratorBase> generators)
 {
-    private readonly ImmutableArray<OutputGeneratorBase> _outputGenerators = [..generators];
-
-    public void Execute(SourceProductionContext context, ImmutableArray<RenderItem> renderItems)
+    public OutputGenerationPipeline(params OutputGeneratorBase[] generators)
+        : this(ImmutableArray.CreateRange(generators))
     {
-        foreach (RenderItem item in renderItems)
+    }
+
+    public void Execute(SourceProductionContext context, RenderItem item)
+    {
+        foreach (OutputGeneratorBase generator in generators)
         {
-            foreach (OutputGeneratorBase generator in this._outputGenerators)
-            {
-                generator.Generate(context, item);
-            }
+            generator.Generate(context, item);
         }
     }
 }

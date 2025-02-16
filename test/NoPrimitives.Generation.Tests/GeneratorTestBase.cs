@@ -13,7 +13,6 @@ public abstract class GeneratorTestBase
     private static readonly ImmutableArray<string> _locations =
     [
         typeof(ValueObjectAttribute).Assembly.Location.Replace(".dll", string.Empty),
-        typeof(Integrations).Assembly.Location.Replace(".dll", string.Empty),
         typeof(JsonConvert).Assembly.Location.Replace(".dll", string.Empty),
     ];
 
