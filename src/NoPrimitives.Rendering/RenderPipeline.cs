@@ -4,11 +4,11 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Rendering;
 
-public class Pipeline(params IRenderStep[] steps)
+public class RenderPipeline(params IRenderStep[] steps)
 {
     private static readonly StepWrapper TerminationStep = new();
 
-    private readonly StepWrapper _stepsWrapped = Pipeline.BuildChain(steps);
+    private readonly StepWrapper _stepsWrapped = RenderPipeline.BuildChain(steps);
 
     public string Execute(RenderContext context)
     {
@@ -22,10 +22,10 @@ public class Pipeline(params IRenderStep[] steps)
     {
         if (steps.Length == 0)
         {
-            return Pipeline.TerminationStep;
+            return RenderPipeline.TerminationStep;
         }
 
-        StepWrapper current = Pipeline.TerminationStep;
+        StepWrapper current = RenderPipeline.TerminationStep;
 
         for (int i = steps.Length - 1; i >= 0; i--)
         {

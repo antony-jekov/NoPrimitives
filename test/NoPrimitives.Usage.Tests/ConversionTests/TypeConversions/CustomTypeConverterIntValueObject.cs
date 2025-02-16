@@ -5,12 +5,11 @@ using System.Globalization;
 namespace NoPrimitives.Usage.Tests.ConversionTests.TypeConversions;
 
 [ValueObject<int>]
-[TypeConverter(typeof(Always255Converter))]
 internal partial record CustomTypeConverterIntValueObject;
 
 internal class Always255Converter : CustomTypeConverterIntValueObjectTypeConverter
 {
-    public override object? ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value) =>
+    public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object value) =>
         CustomTypeConverterIntValueObject.Create(255);
 
     public override object? ConvertTo(ITypeDescriptorContext? context, CultureInfo? culture, object? value,

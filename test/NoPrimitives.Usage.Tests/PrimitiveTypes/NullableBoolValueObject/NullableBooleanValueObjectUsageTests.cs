@@ -7,7 +7,7 @@ public class NullableBooleanValueObjectUsageTests
     [Fact]
     public void Value_HasCorrectValue()
     {
-        AssertionExtensions.Should((bool?)this._vo.Value).Be(true);
+        this._vo.Value.Should().Be(true);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class NullableBooleanValueObjectUsageTests
         Touched vo = voPrimitive;
 
         voPrimitive.Should().BeTrue();
-        AssertionExtensions.Should((bool?)vo.Value).BeTrue();
+        vo.Value.Should().BeTrue();
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class NullableBooleanValueObjectUsageTests
         var lesser = Touched.Create(false);
         var same = Touched.Create(true);
 
-        AssertionExtensions.Should((int)this._vo.CompareTo(lesser)).BeGreaterThan(0);
-        AssertionExtensions.Should((int)this._vo.CompareTo(same)).Be(0);
+        this._vo.CompareTo(lesser).Should().BeGreaterThan(0);
+        this._vo.CompareTo(same).Should().Be(0);
     }
 }

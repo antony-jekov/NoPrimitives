@@ -1,20 +1,19 @@
-﻿using NoPrimitives.Core;
-
-
-namespace NoPrimitives.Rendering;
+﻿namespace NoPrimitives.Rendering;
 
 public record RenderContext
 {
     private const string IndentationStep = "    ";
 
-    public RenderContext(RenderItem render)
+    public RenderContext(RenderItem item)
     {
-        this.Item = render;
-        this.PrimitiveTypeName = render.Primitive.ToDisplayString();
+        this.Item = item;
+        this.TypeName = item.ValueObject.Name;
+        this.PrimitiveTypeName = item.Primitive.ToDisplayString();
     }
 
     public RenderItem Item { get; }
 
+    public string TypeName { get; }
     public string PrimitiveTypeName { get; }
 
     public string Indentation { get; private set; } = string.Empty;

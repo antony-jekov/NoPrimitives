@@ -47,8 +47,8 @@ public class CharValueObjectUsageTests
         var greater = Letter.Create('c');
         var same = Letter.Create('b');
 
-        AssertionExtensions.Should((int)this._vo.CompareTo(lesser)).BeGreaterThan(0);
-        AssertionExtensions.Should((int)this._vo.CompareTo(greater)).BeLessThan(0);
-        AssertionExtensions.Should((int)this._vo.CompareTo(same)).Be(0);
+        this._vo.CompareTo(lesser).Should().BeGreaterThan(0);
+        this._vo.CompareTo(greater).Should().BeLessThan(0);
+        this._vo.CompareTo(same).Should().Be(0);
     }
 }

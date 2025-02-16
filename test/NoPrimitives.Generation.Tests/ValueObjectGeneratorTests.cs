@@ -21,9 +21,10 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
                               internal partial record MyValueObject;
                               """;
 
-        (Compilation compilation, ImmutableArray<Diagnostic> diagnostics) = GeneratorTestBase.GenerateSource(source);
+        Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
-        diagnostics.Should().BeEmpty();
+        compilation.GetDiagnostics().Should().BeEmpty();
+
         compilation.SyntaxTrees.Should().HaveCount(3);
 
         SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(1);
@@ -43,9 +44,9 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
                               internal partial record MyValueObject;
                               """;
 
-        (Compilation compilation, ImmutableArray<Diagnostic> diagnostics) = GeneratorTestBase.GenerateSource(source);
+        Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
-        diagnostics.Should().BeEmpty();
+        compilation.GetDiagnostics().Should().BeEmpty();
         compilation.SyntaxTrees.Should().HaveCount(3);
 
         SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(2);
@@ -68,7 +69,7 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
                       internal partial record MyValueObject;
                       """;
 
-        (Compilation compilation, _) = GeneratorTestBase.GenerateSource(source);
+        Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
         compilation.SyntaxTrees.Should().HaveCount(3);
         SyntaxTree syntaxTree = compilation.SyntaxTrees.ElementAt(1);

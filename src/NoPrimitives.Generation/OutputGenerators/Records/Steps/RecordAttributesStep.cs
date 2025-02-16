@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text;
-using NoPrimitives.Core;
 using NoPrimitives.Rendering;
 using NoPrimitives.Rendering.Steps;
 
@@ -18,21 +17,24 @@ internal class RecordAttributesStep : ScopedRenderStep
 
         builder.AppendLine($"""{context.Indentation}[ExcludeFromCodeCoverage(Justification = "Generated Code")]""");
 
-        var typeConverterAttribute =
-            $"System.ComponentModel.TypeConverter(typeof({context.Item.ValueObject.Name}TypeConverter))";
-
-        RecordAttributesStep.AddAttributeIfNotPresent(context, typeConverterAttribute, builder);
+        RecordAttributesStep.AddForIntegrations(context, builder);
     }
 
-    private static void AddForIntegrations(RenderContext context, Integrations integrations, StringBuilder builder)
+    private static void AddForIntegrations(RenderContext context, StringBuilder builder)
     {
-        string symbolName = context.Item.ValueObject.Name;
-
-        if (integrations.HasFlag(Integrations.NewtonsoftJson))
+        if (context.Item.Integrations.HasFlag(Integrations.TypeConversions))
         {
-            var attribute = $"Newtonsoft.Json.JsonConverter(typeof({symbolName}NewtonsoftConverter))";
+            var typeConverterAttribute =
+                $"System.ComponentModel.TypeConverter(typeof({context.Item.ValueObject.Name}TypeConverter))";
 
-            //RecordAttributesStep.AddAttributeIfNotPresent(context, attribute, builder);
+            RecordAttributesStep.AddAttributeIfNotPresent(context, typeConverterAttribute, builder);
+        }
+
+        if (context.Item.Integrations.HasFlag(Integrations.NewtonsoftJson))
+        {
+            var attribute = $"Newtonsoft.Json.JsonConverter(typeof({context.TypeName}NewtonsoftJsonConverter))";
+
+            RecordAttributesStep.AddAttributeIfNotPresent(context, attribute, builder);
         }
     }
 

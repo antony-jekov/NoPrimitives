@@ -6,10 +6,15 @@ using NoPrimitives.Rendering;
 
 namespace NoPrimitives.Generation.OutputGenerators;
 
-internal abstract class OutputGeneratorBase(string? suffix = null)
+internal abstract class OutputGeneratorBase(string? suffix = null, Integrations? integrations = null)
 {
     public void Generate(SourceProductionContext context, RenderItem item)
     {
+        if (integrations.HasValue && !item.Integrations.HasFlag(integrations.Value))
+        {
+            return;
+        }
+
         string filename = OutputGeneratorBase.FilenameFor(item.ValueObject, suffix);
         string source = this.Render(item);
 
@@ -35,16 +40,6 @@ internal abstract class OutputGeneratorBase(string? suffix = null)
         !symbol.ContainingNamespace.IsGlobalNamespace
             ? $"namespace {symbol.ContainingNamespace.ToDisplayString()}"
             : string.Empty;
-
-    protected static string WrapInNamespaceFor(INamedTypeSymbol symbol, string source) =>
-        symbol.ContainingNamespace.IsGlobalNamespace
-            ? source
-            : $$"""
-                {{OutputGeneratorBase.WriteNamespace(symbol)}}
-                {
-                {{source}}
-                }
-                """;
 
     protected abstract string Render(RenderItem item);
 }

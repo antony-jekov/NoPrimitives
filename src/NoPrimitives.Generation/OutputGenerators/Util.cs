@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Microsoft.CodeAnalysis;
-using NoPrimitives.Core;
 
 
 namespace NoPrimitives.Generation.OutputGenerators;
@@ -43,14 +42,29 @@ internal static class Util
                || typeSymbol.BaseType?.ToDisplayString() == "System.DateTime";
     }
 
-    internal static Integrations? ExtractIntegrations(ISymbol symbol) =>
+    internal static Integrations? ExtractGlobalIntegrations(IAssemblySymbol assembly) =>
+        Util.ExtractIntegrations(assembly);
+
+    internal static Integrations ExtractValueObjectIntegrations(INamedTypeSymbol valueObject,
+        Integrations? globalIntegrations) =>
+        Util.ExtractIntegrations(valueObject) ?? globalIntegrations ?? Integrations.Default;
+
+    private static Integrations? ExtractIntegrations(ISymbol symbol) =>
         symbol.GetAttributes()
             .FirstOrDefault(Util.IsValueObjectAttribute)
             ?.ConstructorArguments
-            .Where(arg => arg.Value is Integrations)
-            .Select(arg => arg.Value is not null ? (Integrations)arg.Value : Integrations.Default)
+            .Where(arg => arg.Value is int intValue && intValue > 0)
+            .Select(arg =>
+            {
+                if (arg.Value is int intValue)
+                {
+                    return (Integrations)intValue;
+                }
+
+                return new Integrations?();
+            })
             .FirstOrDefault()
-        ?? Integrations.Default;
+        ?? null;
 
     internal static bool IsValueObjectAttribute(AttributeData ad) =>
         ad.AttributeClass?.ToString().StartsWith("NoPrimitives.ValueObject") ?? false;

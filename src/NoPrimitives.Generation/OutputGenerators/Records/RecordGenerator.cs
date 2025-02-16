@@ -1,5 +1,4 @@
-﻿using NoPrimitives.Core;
-using NoPrimitives.Generation.OutputGenerators.Records.Steps;
+﻿using NoPrimitives.Generation.OutputGenerators.Records.Steps;
 using NoPrimitives.Rendering;
 using NoPrimitives.Rendering.Steps;
 
@@ -8,7 +7,7 @@ namespace NoPrimitives.Generation.OutputGenerators.Records;
 
 internal sealed class RecordGenerator : OutputGeneratorBase
 {
-    private readonly Rendering.Pipeline _renderPipeline = new(
+    private static readonly RenderPipeline RenderPipeline = new(
         new NamespaceStep(),
         new UsingsStep(
             "System",
@@ -27,5 +26,5 @@ internal sealed class RecordGenerator : OutputGeneratorBase
     );
 
     protected override string Render(RenderItem item) =>
-        this._renderPipeline.Execute(new RenderContext(item));
+        RecordGenerator.RenderPipeline.Execute(new RenderContext(item));
 }

@@ -1,7 +1,4 @@
-﻿using NoPrimitives.Core;
+﻿namespace NoPrimitives.NewtonsoftJson.Tests;
 
-
-namespace NoPrimitives.NewtonsoftJson.Tests;
-
-[ValueObject<int>(Integrations.NewtonsoftJson)]
+[ValueObject<int>]
 internal partial record IntegerValueObject;

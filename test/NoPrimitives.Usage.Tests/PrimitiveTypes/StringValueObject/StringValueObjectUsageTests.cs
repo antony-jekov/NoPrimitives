@@ -7,7 +7,7 @@ public class StringValueObjectUsageTests
     [Fact]
     public void Value_HasCorrectValue()
     {
-        AssertionExtensions.Should((string)this._vo.Value).Be("some@gmail.com");
+        ((string)this._vo.Value).Should().Be("some@gmail.com");
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class StringValueObjectUsageTests
         Email vo = voPrimitive;
 
         voPrimitive.Should().Be("some@gmail.com");
-        AssertionExtensions.Should((string)vo.Value).Be("some@gmail.com");
+        ((string)vo.Value).Should().Be("some@gmail.com");
     }
 
     [Fact]
@@ -48,8 +48,8 @@ public class StringValueObjectUsageTests
         var greater = Email.Create("ccc");
         var same = Email.Create("bbb");
 
-        AssertionExtensions.Should((int)vo.CompareTo(lesser)).BeGreaterThan(0);
-        AssertionExtensions.Should((int)vo.CompareTo(greater)).BeLessThan(0);
-        AssertionExtensions.Should((int)vo.CompareTo(same)).Be(0);
+        vo.CompareTo(lesser).Should().BeGreaterThan(0);
+        vo.CompareTo(greater).Should().BeLessThan(0);
+        vo.CompareTo(same).Should().Be(0);
     }
 }

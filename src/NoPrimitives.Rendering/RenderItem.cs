@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using NoPrimitives.Core;
 
 
 namespace NoPrimitives.Rendering;

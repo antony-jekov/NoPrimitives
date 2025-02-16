@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using NoPrimitives.NewtonsoftJson.Tests.TestData;
 
 
 namespace NoPrimitives.NewtonsoftJson.Tests;
@@ -7,31 +7,31 @@ namespace NoPrimitives.NewtonsoftJson.Tests;
 public class SerializingConversionTests
 {
     [Theory]
-    [ClassData(typeof(ValueObjectsToJSONData))]
+    [ClassData(typeof(ValueObjectsToJsonData))]
     public void Conversion_WhenValueObjectIsSerialized_ItIsSerializedAsItsPrimitive(object valueObject,
-        string expectedJSON, Type expectedType)
+        string expectedJson, Type expectedType)
     {
         string json = JsonConvert.SerializeObject(valueObject);
 
-        json.Should().Be(expectedJSON);
+        json.Should().Be(expectedJson);
 
         object? valueObjectDeserialized = JsonConvert.DeserializeObject(json, expectedType);
 
         valueObjectDeserialized.Should().NotBeNull();
         valueObjectDeserialized.Should().Be(valueObject);
     }
-}
 
-public class ValueObjectsToJSONData : IEnumerable<object[]>
-{
-    private static readonly List<object[]> TestData =
-    [
-        new object[] { IntegerValueObject.Create(25), "25", typeof(IntegerValueObject) },
-    ];
+    [Fact]
+    public void CustomConversion_WhenValueObjectIsSerialized_ItIsSerializedAsItsPrimitive()
+    {
+        string json = JsonConvert.SerializeObject(CustomConvertedIntegerValueObject.Create(100));
 
-    public IEnumerator<object[]> GetEnumerator() =>
-        ValueObjectsToJSONData.TestData.GetEnumerator();
+        json.Should().Be("\"Always25\"");
 
-    IEnumerator IEnumerable.GetEnumerator() =>
-        this.GetEnumerator();
+        object? valueObjectDeserialized =
+            JsonConvert.DeserializeObject<CustomConvertedIntegerValueObject>(json);
+
+        valueObjectDeserialized.Should().NotBeNull();
+        valueObjectDeserialized.Should().Be(CustomConvertedIntegerValueObject.Create(25));
+    }
 }

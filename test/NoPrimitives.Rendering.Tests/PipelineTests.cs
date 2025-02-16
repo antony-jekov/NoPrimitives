@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
-using NoPrimitives.Core;
 using NoPrimitives.Rendering.Steps;
 using NSubstitute;
 
@@ -12,7 +11,7 @@ public class PipelineTests
     [Fact]
     public void Construct_WhenProvidedWithNoSteps_DoesNothing()
     {
-        var pipeline = new Pipeline();
+        var pipeline = new RenderPipeline();
 
         var symbol = Substitute.For<INamedTypeSymbol>();
         var typeSymbol = Substitute.For<ITypeSymbol>();
@@ -30,7 +29,7 @@ public class PipelineTests
     [Fact]
     public void Execute_WhenGivenSteps_ExecutesInOrder()
     {
-        var pipeline = new Pipeline(
+        var pipeline = new RenderPipeline(
             new ActionStep((context, builder, next) =>
             {
                 var sb = new StringBuilder();

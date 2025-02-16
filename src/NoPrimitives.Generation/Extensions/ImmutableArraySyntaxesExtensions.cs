@@ -2,7 +2,6 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NoPrimitives.Core;
 using NoPrimitives.Generation.OutputGenerators;
 using NoPrimitives.Rendering;
 
@@ -14,7 +13,7 @@ internal static class ImmutableArraySyntaxesExtensions
     public static ImmutableArray<RenderItem> ToRenderItems(
         this ImmutableArray<RecordDeclarationSyntax> recordDeclarations, Compilation compilation)
     {
-        Integrations? globalIntegrations = Util.ExtractIntegrations(compilation.Assembly);
+        Integrations? globalIntegrations = Util.ExtractGlobalIntegrations(compilation.Assembly);
         return
         [
             ..recordDeclarations
@@ -33,11 +32,10 @@ internal static class ImmutableArraySyntaxesExtensions
             return null;
         }
 
+        Integrations integrations = Util.ExtractValueObjectIntegrations(symbol, globalIntegrations);
         ITypeSymbol? typeSymbol = ImmutableArraySyntaxesExtensions.ExtractTypeArgument(symbol);
-        Integrations valueObjectIntegrations =
-            Util.ExtractIntegrations(symbol) ?? globalIntegrations ?? Integrations.Default;
 
-        return typeSymbol is not null ? new RenderItem(symbol, typeSymbol, valueObjectIntegrations) : null;
+        return typeSymbol is not null ? new RenderItem(symbol, typeSymbol, integrations) : null;
     }
 
     private static ITypeSymbol? ExtractTypeArgument(INamedTypeSymbol symbol) =>

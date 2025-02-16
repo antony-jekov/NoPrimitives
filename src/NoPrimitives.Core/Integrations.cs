@@ -1,14 +1,15 @@
 ﻿using System;
 
 
-namespace NoPrimitives.Core;
+namespace NoPrimitives;
 
 [Flags]
 public enum Integrations
 {
-    None = 0,
-    SystemTextJson = 1,
-    TypeConversions = 1 << 1,
-    NewtonsoftJson = 1 << 2,
+    NotSpecified = 0,
+    None = 1,
+    SystemTextJson = 1 << 1,
+    TypeConversions = 1 << 2,
+    NewtonsoftJson = 1 << 3,
     Default = Integrations.SystemTextJson | Integrations.TypeConversions,
 }

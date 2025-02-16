@@ -7,7 +7,7 @@ public class UnsignedIntegerValueObjectUsageTests
     [Fact]
     public void Value_HasCorrectValue()
     {
-        AssertionExtensions.Should((uint)this._vo.Value).Be(24);
+        this._vo.Value.Should().Be(24);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class UnsignedIntegerValueObjectUsageTests
         Count vo = voPrimitive;
 
         voPrimitive.Should().Be(24);
-        AssertionExtensions.Should((uint)vo.Value).Be(24);
+        vo.Value.Should().Be(24);
     }
 
     [Fact]
@@ -47,9 +47,9 @@ public class UnsignedIntegerValueObjectUsageTests
         var greater = Count.Create(100);
         var same = Count.Create(24);
 
-        AssertionExtensions.Should((int)this._vo.CompareTo(lesser)).BeGreaterThan(0);
-        AssertionExtensions.Should((int)this._vo.CompareTo(greater)).BeLessThan(0);
-        AssertionExtensions.Should((int)this._vo.CompareTo(same)).Be(0);
+        this._vo.CompareTo(lesser).Should().BeGreaterThan(0);
+        this._vo.CompareTo(greater).Should().BeLessThan(0);
+        this._vo.CompareTo(same).Should().Be(0);
     }
 
     [Fact]
@@ -59,16 +59,16 @@ public class UnsignedIntegerValueObjectUsageTests
         var greater = Count.Create(25);
         var same = Count.Create(24);
 
-        AssertionExtensions.Should((bool)(this._vo > lesser)).BeTrue();
-        AssertionExtensions.Should((bool)(this._vo < greater)).BeTrue();
+        (this._vo > lesser).Should().BeTrue();
+        (this._vo < greater).Should().BeTrue();
 
-        AssertionExtensions.Should((bool)(this._vo > same)).BeFalse();
-        AssertionExtensions.Should((bool)(this._vo < same)).BeFalse();
+        (this._vo > same).Should().BeFalse();
+        (this._vo < same).Should().BeFalse();
 
-        AssertionExtensions.Should((bool)(this._vo >= lesser)).BeTrue();
-        AssertionExtensions.Should((bool)(this._vo <= greater)).BeTrue();
+        (this._vo >= lesser).Should().BeTrue();
+        (this._vo <= greater).Should().BeTrue();
 
-        AssertionExtensions.Should((bool)(this._vo >= same)).BeTrue();
-        AssertionExtensions.Should((bool)(this._vo <= same)).BeTrue();
+        (this._vo >= same).Should().BeTrue();
+        (this._vo <= same).Should().BeTrue();
     }
 }
