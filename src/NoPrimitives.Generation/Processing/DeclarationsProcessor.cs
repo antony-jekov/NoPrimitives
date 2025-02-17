@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NoPrimitives.Generation.Extensions;
@@ -10,37 +11,41 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Generation.Processing;
 
-internal static class DeclarationsProcessor
+internal class DeclarationsProcessor(Compilation compilation)
 {
-    internal static void Process(SourceProductionContext context,
-        Compilation compilation,
+    private readonly Integrations? _globalIntegrations = Util.ExtractGlobalIntegrations(compilation.Assembly);
+
+    internal void Process(SourceProductionContext context,
         ImmutableArray<TypeDeclarationSyntax> declarations)
     {
-        Integrations? globalIntegrations = Util.ExtractGlobalIntegrations(compilation.Assembly);
-        DeclarationsProcessor.ProcessRecords(context, compilation, declarations, globalIntegrations);
+        ImmutableArray<RenderItem> recordItems =
+            this.ProcessRecords<RecordDeclarationSyntax>(
+                context,
+                declarations,
+                DeclarationsProcessor.ProvideIntegratedRecordsGenerator
+            );
     }
 
-    private static ImmutableArray<RenderItem> ProcessRecords(SourceProductionContext context,
-        Compilation compilation,
+    private ImmutableArray<RenderItem> ProcessRecords<TDeclaration>(SourceProductionContext context,
         ImmutableArray<TypeDeclarationSyntax> declarations,
-        Integrations? globalIntegrations)
+        Func<ImmutableArray<AttributeStep>, ImmutableArray<IRenderStep>, OutputGeneratorBase> provider)
+        where TDeclaration : TypeDeclarationSyntax
     {
         ImmutableArray<RenderItem> renderItems =
-            declarations.OfType<RecordDeclarationSyntax>()
-                .ToRenderItems(compilation, globalIntegrations);
+            declarations.OfType<TDeclaration>()
+                .ToRenderItems(compilation, this._globalIntegrations);
 
         foreach (RenderItem item in renderItems)
         {
             IntegrationPipelines
-                .GetFor(item.Integrations, DeclarationsProcessor.ProvideIntegratedRecordsGenerator)
+                .GetFor(item.Integrations, provider)
                 .Execute(context, item);
         }
 
         return renderItems;
     }
 
-    private static OutputGeneratorBase ProvideIntegratedRecordsGenerator(
-        ImmutableArray<AttributeStep> integrationsAttributes,
-        ImmutableArray<IRenderStep> integrationsSteps) =>
-        new RecordGenerator(integrationsAttributes, integrationsSteps);
+    private static RecordGenerator ProvideIntegratedRecordsGenerator(
+        ImmutableArray<AttributeStep> integrationsAttributes, ImmutableArray<IRenderStep> integrationsSteps) =>
+        new(integrationsAttributes, integrationsSteps);
 }

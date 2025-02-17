@@ -21,7 +21,8 @@ public class ValueObjectGenerator : IIncrementalGenerator
     private static void Execute(SourceProductionContext context,
         (Compilation compilation, ImmutableArray<TypeDeclarationSyntax> declarations) args)
     {
-        DeclarationsProcessor.Process(context, args.compilation, args.declarations);
+        var declarationsProcessor = new DeclarationsProcessor(args.compilation);
+        declarationsProcessor.Process(context, args.declarations);
     }
 
     private static
