@@ -7,12 +7,12 @@ public class NamespaceStep : ScopeStartStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {
-        if (context.ValueObjectSymbol.ContainingNamespace.IsGlobalNamespace)
+        if (context.Item.ValueObject.ContainingNamespace.IsGlobalNamespace)
         {
             return;
         }
 
-        string namespaceName = context.ValueObjectSymbol.ContainingNamespace.ToDisplayString();
+        string namespaceName = context.Item.ValueObject.ContainingNamespace.ToDisplayString();
 
         builder.AppendLine($"{context.Indentation}namespace {namespaceName}");
     }

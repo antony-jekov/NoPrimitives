@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Text;
 using NoPrimitives.Rendering;
 using NoPrimitives.Rendering.Steps;
@@ -6,7 +7,7 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Generation.OutputGenerators.Records.Steps;
 
-internal class RecordAttributesStep : ScopedRenderStep
+internal class RecordAttributesStep(ImmutableArray<AttributeStep> integrationAttributes) : ScopedRenderStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {
@@ -17,14 +18,14 @@ internal class RecordAttributesStep : ScopedRenderStep
 
         builder.AppendLine($"""{context.Indentation}[ExcludeFromCodeCoverage(Justification = "Generated Code")]""");
 
-        bool alreadyHasTypeConverterAttribute =
-            Util.AlreadyHasAttributeStartingWith(context.ValueObjectSymbol, "System.ComponentModel.TypeConverter");
+        this.AddForIntegrations(context, builder);
+    }
 
-        if (!alreadyHasTypeConverterAttribute)
+    private void AddForIntegrations(RenderContext context, StringBuilder builder)
+    {
+        foreach (AttributeStep attribute in integrationAttributes)
         {
-            builder.AppendLine(
-                $"{context.Indentation}[System.ComponentModel.TypeConverter(typeof({context.ValueObjectSymbol.Name}TypeConverter))]"
-            );
+            attribute.Render(context, builder, RenderPipeline.TerminationStep);
         }
     }
 }

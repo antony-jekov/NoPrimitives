@@ -8,7 +8,7 @@ public class GuidValueObjectUsageTests
     [Fact]
     public void Value_HasCorrectValue()
     {
-        AssertionExtensions.Should((Guid)this._vo.Value).Be(GuidValueObjectUsageTests.RandomId);
+        this._vo.Value.Should().Be(GuidValueObjectUsageTests.RandomId);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class GuidValueObjectUsageTests
         UserId vo = voPrimitive;
 
         voPrimitive.Should().Be(id);
-        AssertionExtensions.Should((Guid)vo.Value).Be(id);
+        vo.Value.Should().Be(id);
     }
 
     [Fact]
@@ -50,8 +50,8 @@ public class GuidValueObjectUsageTests
         var greater = UserId.Create(Guid.Parse("2c59fa8d-67a7-46e1-b987-86a7d58a26b0"));
         var same = UserId.Create(Guid.Parse("1c59fa8d-67a7-46e1-b987-86a7d58a26b0"));
 
-        AssertionExtensions.Should((int)vo.CompareTo(lesser)).BeGreaterThan(0);
-        AssertionExtensions.Should((int)vo.CompareTo(greater)).BeLessThan(0);
-        AssertionExtensions.Should((int)vo.CompareTo(same)).Be(0);
+        vo.CompareTo(lesser).Should().BeGreaterThan(0);
+        vo.CompareTo(greater).Should().BeLessThan(0);
+        vo.CompareTo(same).Should().Be(0);
     }
 }

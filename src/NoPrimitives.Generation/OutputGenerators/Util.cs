@@ -9,9 +9,7 @@ internal static class Util
     internal static string AccessModifierFor(INamedTypeSymbol symbol) =>
         symbol.DeclaredAccessibility == Accessibility.Public ? "public" : "internal";
 
-    internal static bool AlreadyHasAttributeStartingWith(INamedTypeSymbol symbol, string prefix) =>
-        symbol.GetAttributes()
-            .Any(a => a.AttributeClass?.ToString().StartsWith(prefix) ?? false);
+    
 
     internal static ITypeSymbol ExtractTypeFromNullableType(ITypeSymbol typeSymbol) =>
         typeSymbol.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
@@ -41,4 +39,31 @@ internal static class Util
                 typeSymbol.Name is "DateTime" or "TimeSpan" or "DateOnly" or "TimeOnly" or "DateTimeOffset")
                || typeSymbol.BaseType?.ToDisplayString() == "System.DateTime";
     }
+
+    internal static Integrations? ExtractGlobalIntegrations(IAssemblySymbol assembly) =>
+        Util.ExtractIntegrations(assembly);
+
+    internal static Integrations ExtractValueObjectIntegrations(INamedTypeSymbol valueObject,
+        Integrations? globalIntegrations) =>
+        Util.ExtractIntegrations(valueObject) ?? globalIntegrations ?? Integrations.Default;
+
+    private static Integrations? ExtractIntegrations(ISymbol symbol) =>
+        symbol.GetAttributes()
+            .FirstOrDefault(Util.IsValueObjectAttribute)
+            ?.ConstructorArguments
+            .Where(arg => arg.Value is int intValue && intValue > 0)
+            .Select(arg =>
+            {
+                if (arg.Value is int intValue)
+                {
+                    return (Integrations)intValue;
+                }
+
+                return new Integrations?();
+            })
+            .FirstOrDefault()
+        ?? null;
+
+    internal static bool IsValueObjectAttribute(AttributeData ad) =>
+        ad.AttributeClass?.ToString().StartsWith("NoPrimitives.ValueObject") ?? false;
 }

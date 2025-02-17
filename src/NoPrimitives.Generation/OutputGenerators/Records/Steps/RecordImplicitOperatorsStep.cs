@@ -9,17 +9,19 @@ internal class RecordImplicitOperatorsStep : ScopedRenderStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {
+        string indentation = context.Indentation;
+
         builder.AppendLine($$"""
 
-                             {{context.Indentation}}public static implicit operator {{context.ValueObjectSymbol.Name}}({{context.PrimitiveTypeName}} value)
-                             {{context.Indentation}}{
-                             {{context.Indentation}}    return Create(value);
-                             {{context.Indentation}}}
+                             {{indentation}}public static implicit operator {{context.Item.ValueObject.Name}}({{context.PrimitiveTypeName}} value)
+                             {{indentation}}{
+                             {{indentation}}    return Create(value);
+                             {{indentation}}}
 
-                             {{context.Indentation}}public static implicit operator {{context.PrimitiveTypeName}}({{context.ValueObjectSymbol.Name}} vo)
-                             {{context.Indentation}}{
-                             {{context.Indentation}}    return vo.Value;   
-                             {{context.Indentation}}}
+                             {{indentation}}public static implicit operator {{context.PrimitiveTypeName}}({{context.Item.ValueObject.Name}} vo)
+                             {{indentation}}{
+                             {{indentation}}    return vo.Value;   
+                             {{indentation}}}
                              """);
     }
 }

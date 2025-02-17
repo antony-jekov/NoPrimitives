@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoPrimitives.Rendering", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoPrimitives.Rendering.Tests", "test\NoPrimitives.Rendering.Tests\NoPrimitives.Rendering.Tests.csproj", "{F8DA608A-A2BB-4965-8E64-352504B8A6A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoPrimitives.NewtonsoftJson.Tests", "test\NoPrimitives.NewtonsoftJson.Tests\NoPrimitives.NewtonsoftJson.Tests.csproj", "{AD4F6511-C44F-41EE-8710-4957D18469D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{F8DA608A-A2BB-4965-8E64-352504B8A6A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8DA608A-A2BB-4965-8E64-352504B8A6A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8DA608A-A2BB-4965-8E64-352504B8A6A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD4F6511-C44F-41EE-8710-4957D18469D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD4F6511-C44F-41EE-8710-4957D18469D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD4F6511-C44F-41EE-8710-4957D18469D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD4F6511-C44F-41EE-8710-4957D18469D0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{69D0F7BE-535A-4271-94A8-BA9A0549E728} = {4DB89563-2D98-4A2B-B612-B0AC96A127B9}
@@ -60,5 +66,6 @@ Global
 		{2F8C891E-7BE6-46E7-9659-245CD2ACEAEB} = {FBD7D15B-39BA-4778-984E-886EED7D30A0}
 		{2A5B5B07-15DA-457E-BBAE-0B0954802FBC} = {4DB89563-2D98-4A2B-B612-B0AC96A127B9}
 		{F8DA608A-A2BB-4965-8E64-352504B8A6A4} = {FBD7D15B-39BA-4778-984E-886EED7D30A0}
+		{AD4F6511-C44F-41EE-8710-4957D18469D0} = {FBD7D15B-39BA-4778-984E-886EED7D30A0}
 	EndGlobalSection
 EndGlobal

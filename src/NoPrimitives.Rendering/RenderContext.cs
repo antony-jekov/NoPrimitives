@@ -1,17 +1,20 @@
-﻿using Microsoft.CodeAnalysis;
+﻿namespace NoPrimitives.Rendering;
 
-
-namespace NoPrimitives.Rendering;
-
-public record RenderContext(INamedTypeSymbol ValueObjectSymbol, ITypeSymbol PrimitiveTypeSymbol)
+public record RenderContext
 {
     private const string IndentationStep = "    ";
 
-    public INamedTypeSymbol ValueObjectSymbol { get; } = ValueObjectSymbol;
+    public RenderContext(RenderItem item)
+    {
+        this.Item = item;
+        this.TypeName = item.ValueObject.Name;
+        this.PrimitiveTypeName = item.Primitive.ToDisplayString();
+    }
 
-    public ITypeSymbol PrimitiveTypeSymbol { get; } = PrimitiveTypeSymbol;
+    public RenderItem Item { get; }
 
-    public string PrimitiveTypeName { get; } = PrimitiveTypeSymbol.ToDisplayString();
+    public string TypeName { get; }
+    public string PrimitiveTypeName { get; }
 
     public string Indentation { get; private set; } = string.Empty;
 

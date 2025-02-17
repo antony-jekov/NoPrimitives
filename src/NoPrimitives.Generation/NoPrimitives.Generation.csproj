@@ -32,6 +32,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\NoPrimitives.Rendering\NoPrimitives.Rendering.csproj"/>
+        <ProjectReference Include="..\NoPrimitives\NoPrimitives.csproj"/>
     </ItemGroup>
 
 </Project>

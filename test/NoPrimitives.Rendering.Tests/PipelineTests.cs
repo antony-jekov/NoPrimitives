@@ -11,13 +11,15 @@ public class PipelineTests
     [Fact]
     public void Construct_WhenProvidedWithNoSteps_DoesNothing()
     {
-        var pipeline = new Pipeline();
+        var pipeline = new RenderPipeline();
 
         var symbol = Substitute.For<INamedTypeSymbol>();
         var typeSymbol = Substitute.For<ITypeSymbol>();
         typeSymbol.ToDisplayString().Returns(string.Empty);
 
-        var context = new RenderContext(symbol, typeSymbol);
+        var renderItem = new RenderItem(symbol, typeSymbol);
+
+        var context = new RenderContext(renderItem);
 
         string result = pipeline.Execute(context);
 
@@ -27,7 +29,7 @@ public class PipelineTests
     [Fact]
     public void Execute_WhenGivenSteps_ExecutesInOrder()
     {
-        var pipeline = new Pipeline(
+        var pipeline = new RenderPipeline(
             new ActionStep((context, builder, next) =>
             {
                 var sb = new StringBuilder();
@@ -58,7 +60,8 @@ public class PipelineTests
         var typeSymbol = Substitute.For<ITypeSymbol>();
         typeSymbol.ToDisplayString().Returns(string.Empty);
 
-        var context = new RenderContext(symbol, typeSymbol);
+        var renderItem = new RenderItem(symbol, typeSymbol);
+        var context = new RenderContext(renderItem);
 
         string result = pipeline.Execute(context);
 
