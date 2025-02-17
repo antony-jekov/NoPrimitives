@@ -1,46 +1,44 @@
 ﻿using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using NoPrimitives.Generation.Extensions;
-using NoPrimitives.Generation.Processors;
-using NoPrimitives.Rendering;
+using NoPrimitives.Generation.Processing;
 
 
 namespace NoPrimitives.Generation;
 
 [Generator]
+[SuppressMessage("ReSharper", "SuggestVarOrType_Elsewhere")]
 public class ValueObjectGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<RecordDeclarationSyntax> provider = ValueObjectGenerator.CreateProvider(context);
-
-        IncrementalValueProvider<(Compilation Left, ImmutableArray<RecordDeclarationSyntax> Right)> source =
-            context.CompilationProvider.Combine(provider.Collect());
-
-        context.RegisterSourceOutput(source, ValueObjectGenerator.GenerateRecordValueObjects);
+        var source = ValueObjectGenerator.CreateSource(context);
+        context.RegisterSourceOutput(source, ValueObjectGenerator.Execute);
     }
 
-    private static IncrementalValuesProvider<RecordDeclarationSyntax> CreateProvider(
-        IncrementalGeneratorInitializationContext context) =>
-        context.SyntaxProvider.CreateSyntaxProvider(
-                static (node, _) =>
-                    node is RecordDeclarationSyntax
-                    {
-                        AttributeLists.Count: > 0,
-                    },
-                static (ctx, _) =>
-                    (RecordDeclarationSyntax)ctx.Node
-            )
-            .Where(static typeDeclaration => typeDeclaration is not null);
-
-    private static void GenerateRecordValueObjects(
-        SourceProductionContext context,
-        (Compilation Compilation, ImmutableArray<RecordDeclarationSyntax> TypeDeclarations) data)
+    private static void Execute(SourceProductionContext context,
+        (Compilation compilation, ImmutableArray<TypeDeclarationSyntax> declarations) args)
     {
-        ImmutableArray<RenderItem> renderItems =
-            data.TypeDeclarations.ToRenderItems(data.Compilation);
-
-        RecordsProcessor.Process(context, renderItems);
+        DeclarationsProcessor.Process(context, args.compilation, args.declarations);
     }
+
+    private static
+        IncrementalValueProvider<(Compilation compilation, ImmutableArray<TypeDeclarationSyntax> declarations)>
+        CreateSource(IncrementalGeneratorInitializationContext context)
+    {
+        var provider = context.SyntaxProvider.CreateSyntaxProvider(
+                ValueObjectGenerator.Predicate,
+                ValueObjectGenerator.Transform)
+            .Where(static declaration => declaration is not null);
+
+        return context.CompilationProvider.Combine(provider.Collect());
+    }
+
+    private static bool Predicate(SyntaxNode node, CancellationToken _) =>
+        node is TypeDeclarationSyntax { AttributeLists.Count: > 0 };
+
+    private static TypeDeclarationSyntax Transform(GeneratorSyntaxContext ctx, CancellationToken _) =>
+        (TypeDeclarationSyntax)ctx.Node;
 }

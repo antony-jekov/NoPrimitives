@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Immutable;
 using System.Text;
 using NoPrimitives.Rendering;
 using NoPrimitives.Rendering.Steps;
@@ -6,7 +7,7 @@ using NoPrimitives.Rendering.Steps;
 
 namespace NoPrimitives.Generation.OutputGenerators.Records.Steps;
 
-internal class RecordAttributesStep(params AttributeStep[] integrationAttributes) : ScopedRenderStep
+internal class RecordAttributesStep(ImmutableArray<AttributeStep> integrationAttributes) : ScopedRenderStep
 {
     protected override void Render(RenderContext context, StringBuilder builder)
     {

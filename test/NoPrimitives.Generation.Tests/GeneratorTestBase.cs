@@ -58,9 +58,4 @@ public abstract class GeneratorTestBase
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
         );
     }
-
-    private static string GetNetStandard20Path() =>
-        Path.Combine(
-            Path.GetDirectoryName(typeof(object).Assembly.Location)!,
-            "netstandard.dll");
 }

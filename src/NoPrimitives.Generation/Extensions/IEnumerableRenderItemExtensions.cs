@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -8,19 +9,17 @@ using NoPrimitives.Rendering;
 
 namespace NoPrimitives.Generation.Extensions;
 
-internal static class ImmutableArraySyntaxesExtensions
+internal static class EnumerableRenderItemExtensions
 {
     public static ImmutableArray<RenderItem> ToRenderItems(
-        this ImmutableArray<RecordDeclarationSyntax> recordDeclarations, Compilation compilation)
-    {
-        Integrations? globalIntegrations = Util.ExtractGlobalIntegrations(compilation.Assembly);
-        return
-        [
-            ..recordDeclarations
-                .Select(d => ImmutableArraySyntaxesExtensions.RenderItemFor(compilation, d, globalIntegrations))
-                .Where(s => s != null),
-        ];
-    }
+        this IEnumerable<TypeDeclarationSyntax> declarations, Compilation compilation,
+        Integrations? globalIntegrations) =>
+    [
+        ..declarations
+            .Select(declaration =>
+                EnumerableRenderItemExtensions.RenderItemFor(compilation, declaration, globalIntegrations)
+            ).OfType<RenderItem>(),
+    ];
 
     private static RenderItem? RenderItemFor(Compilation compilation,
         TypeDeclarationSyntax declarationSyntax, Integrations? globalIntegrations)
@@ -33,14 +32,14 @@ internal static class ImmutableArraySyntaxesExtensions
         }
 
         Integrations integrations = Util.ExtractValueObjectIntegrations(symbol, globalIntegrations);
-        ITypeSymbol? typeSymbol = ImmutableArraySyntaxesExtensions.ExtractTypeArgument(symbol);
+        ITypeSymbol? typeSymbol = EnumerableRenderItemExtensions.ExtractTypeArgument(symbol);
 
         return typeSymbol is not null ? new RenderItem(symbol, typeSymbol, integrations) : null;
     }
 
     private static ITypeSymbol? ExtractTypeArgument(INamedTypeSymbol symbol) =>
-        ImmutableArraySyntaxesExtensions.ExtractGenericTypeArgument(symbol) ??
-        ImmutableArraySyntaxesExtensions.ExtractConstructorTypeArgument(symbol);
+        EnumerableRenderItemExtensions.ExtractGenericTypeArgument(symbol) ??
+        EnumerableRenderItemExtensions.ExtractConstructorTypeArgument(symbol);
 
     private static ITypeSymbol? ExtractConstructorTypeArgument(INamedTypeSymbol symbol)
     {
