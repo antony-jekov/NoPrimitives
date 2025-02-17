@@ -68,6 +68,17 @@ public class PipelineTests
         result.Should().Be("{ Step 1 -> Step 2 -> Step 3 }");
     }
 
+    [Fact]
+    public void ActionStep_WhenExecuted_PerformsAction()
+    {
+        var step = new Steps.ActionStep((context, builder) => { builder.Append("Step 1"); });
+
+        var builder = new StringBuilder();
+        step.Render(null!, builder, RenderPipeline.TerminationStep);
+
+        builder.ToString().Should().Be("Step 1");
+    }
+
     private class ActionStep(
         Action<RenderContext, StringBuilder, INextRenderStep> renderAction)
         : IRenderStep
