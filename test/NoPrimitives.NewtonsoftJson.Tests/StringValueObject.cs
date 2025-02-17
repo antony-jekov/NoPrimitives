@@ -1,5 +1,4 @@
-﻿using NoPrimitives;
-
+﻿namespace NoPrimitives.NewtonsoftJson.Tests;
 
 [ValueObject<string>]
-internal record StringValueObject;
+internal partial record StringValueObject;
