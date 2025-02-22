@@ -25,7 +25,7 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
 
         compilation.GetDiagnostics().Should().BeEmpty();
 
-        compilation.SyntaxTrees.Should().HaveCount(3);
+        compilation.SyntaxTrees.Should().HaveCount(4);
 
         SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(1);
 
@@ -47,7 +47,7 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
         Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
         compilation.GetDiagnostics().Should().BeEmpty();
-        compilation.SyntaxTrees.Should().HaveCount(3);
+        compilation.SyntaxTrees.Should().HaveCount(4);
 
         SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(2);
 
@@ -71,7 +71,7 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
 
         Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
-        compilation.SyntaxTrees.Should().HaveCount(3);
+        compilation.SyntaxTrees.Should().HaveCount(4);
         SyntaxTree syntaxTree = compilation.SyntaxTrees.ElementAt(1);
 
         SyntaxNode root = await syntaxTree.GetRootAsync();

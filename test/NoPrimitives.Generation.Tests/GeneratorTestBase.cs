@@ -37,10 +37,14 @@ public abstract class GeneratorTestBase
         var generator = new ValueObjectGenerator();
         var driver = CSharpGeneratorDriver.Create(generator);
 
-
         driver.RunGeneratorsAndUpdateCompilation(compilation,
             out Compilation updatedCompilation,
-            out ImmutableArray<Diagnostic> _);
+            out ImmutableArray<Diagnostic> diagnostics);
+
+        if (!diagnostics.IsEmpty)
+        {
+            throw new Exception(string.Join(Environment.NewLine, diagnostics));
+        }
 
         return updatedCompilation;
     }

@@ -12,6 +12,7 @@ internal class RecordCompareStep : ScopedRenderStep
     {
         bool isNullable = context.Item.Primitive.NullableAnnotation == NullableAnnotation.Annotated;
         string fallbackValue = isNullable ? " ?? -1" : string.Empty;
+        string compareValue = isNullable ? ".Value" : string.Empty;
         string conditionalAccessValue = isNullable ? "?" : string.Empty;
         string indentation = context.Indentation;
 
@@ -19,7 +20,7 @@ internal class RecordCompareStep : ScopedRenderStep
 
                              {{indentation}}public int CompareTo({{context.Item.ValueObject.Name}} other)
                              {{indentation}}{
-                             {{indentation}}    return this.Value{{conditionalAccessValue}}.CompareTo(other.Value){{fallbackValue}};
+                             {{indentation}}    return this.Value{{conditionalAccessValue}}.CompareTo(other.Value{{compareValue}}){{fallbackValue}};
                              {{indentation}}}
 
                              {{indentation}}public int CompareTo(object other)
