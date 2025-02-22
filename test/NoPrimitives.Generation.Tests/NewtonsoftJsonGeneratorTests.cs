@@ -19,8 +19,6 @@ public class NewtonsoftJsonGeneratorTests : GeneratorTestBase
 
         Compilation compilation = GeneratorTestBase.GenerateSource(src);
 
-
-        compilation.GetDiagnostics().Should().BeEmpty();
         compilation.GetDiagnostics().Should().BeEmpty();
 
         compilation.SyntaxTrees.Should().HaveCount(3);

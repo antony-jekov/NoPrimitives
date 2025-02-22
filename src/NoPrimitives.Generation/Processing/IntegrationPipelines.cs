@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using NoPrimitives.Generation.OutputGenerators;
 using NoPrimitives.Generation.OutputGenerators.Converters.NewtonsoftConverter;
 using NoPrimitives.Generation.OutputGenerators.Converters.NewtonsoftConverter.Steps;
+using NoPrimitives.Generation.OutputGenerators.Converters.SystemTextJsonConverter;
+using NoPrimitives.Generation.OutputGenerators.Converters.SystemTextJsonConverter.Steps;
 using NoPrimitives.Generation.OutputGenerators.Converters.TypeConverter;
 using NoPrimitives.Generation.OutputGenerators.Converters.TypeConverter.Steps;
 using NoPrimitives.Generation.Pipeline;
@@ -14,7 +17,7 @@ namespace NoPrimitives.Generation.Processing;
 
 internal static class IntegrationPipelines
 {
-    private static readonly Dictionary<Integrations, OutputGenerationPipeline> Pipelines = new();
+    private static readonly ConcurrentDictionary<Integrations, OutputGenerationPipeline> Pipelines = new();
 
     internal static OutputGenerationPipeline GetFor(Integrations integration,
         Func<ImmutableArray<AttributeStep>, ImmutableArray<IRenderStep>, OutputGeneratorBase>
@@ -27,7 +30,7 @@ internal static class IntegrationPipelines
 
         pipeline = IntegrationPipelines.BuildPipelineFor(integration, valueObjectGeneratorProvider);
 
-        IntegrationPipelines.Pipelines.Add(integration, pipeline);
+        IntegrationPipelines.Pipelines.TryAdd(integration, pipeline);
         return pipeline;
     }
 
@@ -35,9 +38,11 @@ internal static class IntegrationPipelines
         Func<ImmutableArray<AttributeStep>, ImmutableArray<IRenderStep>, OutputGeneratorBase>
             valueObjectGeneratorProvider)
     {
+        ImmutableArray<AttributeStep> attributeSteps = IntegrationPipelines.BuildAttributeStepsFor(integration);
+        ImmutableArray<IRenderStep> integrationSteps = IntegrationPipelines.BuildIntegrationStepsFor(integration);
         var generators = new List<OutputGeneratorBase>
         {
-            valueObjectGeneratorProvider(IntegrationPipelines.BuildAttributeStepsFor(integration), []),
+            valueObjectGeneratorProvider(attributeSteps, integrationSteps),
         };
 
         if (integration.HasFlag(Integrations.TypeConversions))
@@ -50,7 +55,19 @@ internal static class IntegrationPipelines
             generators.Add(new NewtonsoftConverterGenerator());
         }
 
-        return new OutputGenerationPipeline(generators.ToImmutableArray());
+        if (integration.HasFlag(Integrations.SystemTextJson))
+        {
+            generators.Add(new SystemTextJsonConverterGenerator());
+        }
+
+        return new OutputGenerationPipeline([..generators]);
+    }
+
+    private static ImmutableArray<IRenderStep> BuildIntegrationStepsFor(Integrations integration)
+    {
+        var integrationSteps = new List<IRenderStep>();
+
+        return [..integrationSteps];
     }
 
     private static ImmutableArray<AttributeStep> BuildAttributeStepsFor(Integrations integration)
@@ -65,6 +82,11 @@ internal static class IntegrationPipelines
         if (integration.HasFlag(Integrations.NewtonsoftJson))
         {
             attributes.Add(new NewtonsoftConverterAttributeStep());
+        }
+
+        if (integration.HasFlag(Integrations.SystemTextJson))
+        {
+            attributes.Add(new SystemTextJsonConverterAttributeStep());
         }
 
         return [.. attributes];
