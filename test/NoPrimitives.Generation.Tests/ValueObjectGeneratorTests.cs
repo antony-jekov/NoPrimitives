@@ -9,50 +9,52 @@ namespace NoPrimitives.Generation.Tests;
 
 public class ValueObjectGeneratorTests : GeneratorTestBase
 {
-    [Fact]
-    public void Execute_WhenGivenRecordWithValueObjectAttribute_ItGeneratesValueObject()
+    [Theory]
+    [ClassData(typeof(PrimitiveTypes))]
+    [ClassData(typeof(PrimitiveNullableTypes))]
+    public void Execute_WhenGivenSupportedPrimitiveValueWithGenerics_GeneratesDefaultTrees(
+        string valueObjectName,
+        string primitiveType)
     {
-        const string source = """
-                              using NoPrimitives;
-
-                              namespace Some.Namespace;
-
-                              [ValueObject<string>]
-                              internal partial record MyValueObject;
-                              """;
+        string source = ValueObjectGeneratorTests.GenerateDefaultGenericSource(valueObjectName, primitiveType);
 
         Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
-        compilation.GetDiagnostics().Should().BeEmpty();
-
-        compilation.SyntaxTrees.Should().HaveCount(4);
-
-        SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(1);
-
-        generatedSyntaxTree.FilePath.Should().ContainAll("MyValueObject", "Some.Namespace", "NoPrimitives", ".g.cs");
+        ValueObjectGeneratorTests.AssertDefaultGeneration(compilation, valueObjectName);
     }
 
-    [Fact]
-    public void Execute_WhenGivenRecordWithValueObjectAttribute_ItGeneratesTypeConverter()
+    [Theory]
+    [ClassData(typeof(PrimitiveTypes))]
+    public void Execute_WhenGivenSupportedPrimitiveValueWithTypeOf_GeneratesDefaultTrees(
+        string valueObjectName,
+        string primitiveType)
     {
-        const string source = """
-                              using NoPrimitives;
-
-                              namespace Some.Namespace;
-
-                              [ValueObject<string>]
-                              internal partial record MyValueObject;
-                              """;
+        string source = ValueObjectGeneratorTests.GenerateDefaultTypeOfSource(valueObjectName, primitiveType);
 
         Compilation compilation = GeneratorTestBase.GenerateSource(source);
 
+        ValueObjectGeneratorTests.AssertDefaultGeneration(compilation, valueObjectName);
+    }
+
+    private static void AssertDefaultGeneration(Compilation compilation, string valueObjectName)
+    {
         compilation.GetDiagnostics().Should().BeEmpty();
         compilation.SyntaxTrees.Should().HaveCount(4);
 
-        SyntaxTree generatedSyntaxTree = compilation.SyntaxTrees.ElementAt(2);
+        // verify value object generation
+        compilation.SyntaxTrees.ElementAt(1).FilePath
+            .Should()
+            .ContainAll(valueObjectName, "Some.Namespace", "NoPrimitives", ".g.cs");
 
-        generatedSyntaxTree.FilePath.Should()
-            .ContainAll("MyValueObject.TypeConverter", "Some.Namespace", "NoPrimitives", ".g.cs");
+        // verify default type converter
+        compilation.SyntaxTrees.ElementAt(2).FilePath
+            .Should()
+            .ContainAll(valueObjectName, "Some.Namespace", "NoPrimitives", "TypeConverter", ".g.cs");
+
+        // verify default json converter is generated
+        compilation.SyntaxTrees.ElementAt(3).FilePath
+            .Should()
+            .ContainAll("NoPrimitives", "SystemTextJson", ".g.cs", valueObjectName, "Some.Namespace");
     }
 
     [Theory]
@@ -73,7 +75,6 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
 
         compilation.SyntaxTrees.Should().HaveCount(4);
         SyntaxTree syntaxTree = compilation.SyntaxTrees.ElementAt(1);
-
         SyntaxNode root = await syntaxTree.GetRootAsync();
 
         ImmutableArray<BinaryExpressionSyntax> binaryExpressionSyntaxes =
@@ -85,6 +86,26 @@ public class ValueObjectGeneratorTests : GeneratorTestBase
         ValueObjectGeneratorTests.GetOperatorExpressionsFor(binaryExpressionSyntaxes, SyntaxKind.GreaterThanEqualsToken)
             .Should().NotBeEmpty();
     }
+
+    private static string GenerateDefaultTypeOfSource(string valueObjectName, string primitiveType) =>
+        $"""
+         using NoPrimitives;
+
+         namespace Some.Namespace;
+
+         [ValueObject(typeof({primitiveType}))]
+         internal partial record {valueObjectName};
+         """;
+
+    private static string GenerateDefaultGenericSource(string valueObjectName, string primitiveType) =>
+        $"""
+         using NoPrimitives;
+
+         namespace Some.Namespace;
+
+         [ValueObject<{primitiveType}>]
+         internal partial record {valueObjectName};
+         """;
 
     private static IEnumerable<BinaryExpressionSyntax> GetOperatorExpressionsFor(
         ImmutableArray<BinaryExpressionSyntax> expressionSyntaxes, SyntaxKind kind) =>
