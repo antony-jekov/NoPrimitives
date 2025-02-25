@@ -16,7 +16,8 @@ internal sealed class RecordGenerator(
             new UsingsStep(
                 "System",
                 "System.CodeDom.Compiler",
-                "System.Diagnostics.CodeAnalysis"
+                "System.Diagnostics.CodeAnalysis",
+                "NoPrimitives"
             ),
             new RecordAttributesStep(integrationAttributes),
             new RecordTypeDeclarationStep(),

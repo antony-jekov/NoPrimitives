@@ -10,14 +10,14 @@ namespace NoPrimitives.Generation.Tests;
 
 public abstract class GeneratorTestBase
 {
-    private static readonly ImmutableArray<string> _locations =
+    private static readonly ImmutableArray<string> Locations =
     [
         typeof(ValueObjectAttribute).Assembly.Location.Replace(".dll", string.Empty),
         typeof(JsonConvert).Assembly.Location.Replace(".dll", string.Empty),
     ];
 
     private static readonly Lazy<ImmutableArray<MetadataReference>>
-        Net90AndOurs = new(GeneratorTestBase.ScanAssemblies);
+        DependencyAssemblies = new(GeneratorTestBase.ScanAssemblies);
 
     private static ImmutableArray<MetadataReference> ScanAssemblies() =>
         new ReferenceAssemblies(
@@ -25,7 +25,7 @@ public abstract class GeneratorTestBase
                 new PackageIdentity("Microsoft.NETCore.App.Ref", "9.0.0"),
                 Path.Combine("ref", "net9.0")
             )
-            .AddAssemblies(GeneratorTestBase._locations)
+            .AddAssemblies(GeneratorTestBase.Locations)
             .ResolveAsync(LanguageNames.CSharp, CancellationToken.None).GetAwaiter().GetResult();
 
     protected static Compilation GenerateSource(
@@ -53,7 +53,7 @@ public abstract class GeneratorTestBase
     {
         CSharpParseOptions options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
         SyntaxTree sourceTree = CSharpSyntaxTree.ParseText(source, options);
-        ImmutableArray<MetadataReference> references = GeneratorTestBase.Net90AndOurs.Value;
+        ImmutableArray<MetadataReference> references = GeneratorTestBase.DependencyAssemblies.Value;
 
         return CSharpCompilation.Create(
             testName,

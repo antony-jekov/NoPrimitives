@@ -1,4 +1,4 @@
-﻿namespace NoPrimitives.Usage.Tests;
+﻿namespace NoPrimitives.NewtonsoftJson.Tests;
 
 [ValueObject<byte?>]
 internal partial record struct NullByteValueObject;

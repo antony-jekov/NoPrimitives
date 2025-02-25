@@ -8,13 +8,20 @@ public class SerializingConversionTests
 {
     [Theory]
     [ClassData(typeof(ValueObjectsToJsonData))]
-    public void Conversion_WhenValueObjectIsSerialized_ItIsSerializedAsItsPrimitive(object valueObject,
-        string expectedJson, Type expectedType)
+    [ClassData(typeof(NullableValueObjectsToJsonData))]
+    public void Conversion_WhenValueObjectIsSerialized_ItIsSerializedAsItsPrimitive<T>(IValueObject<T> valueObject,
+        string expectedJson, Type _)
     {
         string json = JsonConvert.SerializeObject(valueObject);
-
         json.Should().Be(expectedJson);
+    }
 
+    [Theory]
+    [ClassData(typeof(ValueObjectsToJsonData))]
+    [ClassData(typeof(NullableValueObjectsToJsonData))]
+    public void Conversion_WhenPrimitiveValueIsDeserialized_ItDeserializesAsItsValueObject<T>(
+        IValueObject<T> valueObject, string json, Type expectedType)
+    {
         object? valueObjectDeserialized = JsonConvert.DeserializeObject(json, expectedType);
 
         valueObjectDeserialized.Should().NotBeNull();

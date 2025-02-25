@@ -1,21 +1,25 @@
 ﻿using Microsoft.CodeAnalysis;
+using NoPrimitives.Generation.Tests.TestData;
 
 
 namespace NoPrimitives.Generation.Tests;
 
 public class NewtonsoftJsonGeneratorTests : GeneratorTestBase
 {
-    [Fact]
-    public void WhenNewtonsoftIntegration_IntegratesWithNewtonsoftJson()
+    [Theory]
+    [ClassData(typeof(PrimitiveTypes))]
+    [ClassData(typeof(PrimitiveNullableTypes))]
+    public void WhenNewtonsoftIntegration_IntegratesWithNewtonsoftJson(
+        string valueObjectName, string primitiveType)
     {
-        const string src = """
-                           using NoPrimitives;
+        var src = $"""
+                   using NoPrimitives;
 
-                           namespace SomeNamespace;
+                   namespace SomeNamespace;
 
-                           [ValueObject<int>(Integrations.NewtonsoftJson)]
-                           public partial record SomeValueObject;
-                           """;
+                   [ValueObject<{primitiveType}>(Integrations.NewtonsoftJson)]
+                   public partial record {valueObjectName};
+                   """;
 
         Compilation compilation = GeneratorTestBase.GenerateSource(src);
 

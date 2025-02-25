@@ -9,8 +9,6 @@ internal static class Util
     internal static string AccessModifierFor(INamedTypeSymbol symbol) =>
         symbol.DeclaredAccessibility == Accessibility.Public ? "public" : "internal";
 
-    
-
     internal static ITypeSymbol ExtractTypeFromNullableType(ITypeSymbol typeSymbol) =>
         typeSymbol.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T &&
         typeSymbol is INamedTypeSymbol { TypeArguments.Length: 1 } namedTypeSymbol
@@ -36,7 +34,7 @@ internal static class Util
         typeSymbol = Util.ExtractTypeFromNullableType(typeSymbol);
 
         return (typeSymbol.ContainingNamespace?.ToDisplayString() == "System" &&
-                typeSymbol.Name is "DateTime" or "TimeSpan" or "DateOnly" or "TimeOnly" or "DateTimeOffset")
+                typeSymbol.Name is "DateTime" or "DateOnly" or "TimeOnly" or "DateTimeOffset")
                || typeSymbol.BaseType?.ToDisplayString() == "System.DateTime";
     }
 

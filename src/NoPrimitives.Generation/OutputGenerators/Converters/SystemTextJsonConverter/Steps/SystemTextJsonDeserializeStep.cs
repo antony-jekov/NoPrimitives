@@ -57,9 +57,12 @@ internal class SystemTextJsonDeserializeStep : ScopedRenderStep
             "string" => "reader.GetString()",
             "System.Guid" => "reader.GetGuid()",
             "System.DateTime" => "reader.GetDateTime()",
-            "System.DateTimeOffset" => "DateTimeOffset.Parse(reader.GetString())",
-            "System.DateOnly" => "DateOnly.Parse(reader.GetString())",
-            "System.TimeOnly" => "TimeOnly.Parse(reader.GetString())",
+            "System.DateTimeOffset" =>
+                "DateTimeOffset.Parse(reader.GetString(), System.Globalization.CultureInfo.InvariantCulture)",
+            "System.DateOnly" =>
+                "DateOnly.Parse(reader.GetString(), System.Globalization.CultureInfo.InvariantCulture)",
+            "System.TimeOnly" =>
+                "TimeOnly.Parse(reader.GetString(), System.Globalization.CultureInfo.InvariantCulture)",
             _ => throw new NotSupportedException($"Unsupported primitive type: {primitiveType}"),
         };
 }
